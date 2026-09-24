@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Prakaipad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pad-amber: 245, 158, 11;
+            --pad-pink: 236, 72, 153;
+            --pad-red: 239, 68, 68;
+            --pad-cyan: 6, 182, 212;
+            --pad-teal: 20, 184, 166;
+            --pad-blue: 59, 130, 246;
+            --pad-indigo: 99, 102, 241;
+            --pad-violet: 139, 92, 246;
+            --pad-yellow: 234, 179, 8;
+            --pad-purple: 168, 85, 247;
+            --pad-green: 34, 197, 94;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f111a;
+            color: #f3f4f6;
+            touch-action: none;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .drum-pad {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: 1.5rem;
+            background: linear-gradient(145deg, #1e2235, #151826);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 5px 5px 15px #0a0b11, -5px -5px 15px #1c2031;
+            transition: transform 0.05s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        #pad-kick {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+        }
+
+        .drum-pad::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.1s;
+            border-radius: inherit;
+        }
+
+        .glow-amber.active { box-shadow: 0 0 25px rgba(var(--pad-amber), 0.8), inset 0 0 15px rgba(var(--pad-amber), 0.5); border-color: rgb(var(--pad-amber)); transform: scale(0.92); z-index: 10; }
+        .glow-pink.active { box-shadow: 0 0 25px rgba(var(--pad-pink), 0.8), inset 0 0 15px rgba(var(--pad-pink), 0.5); border-color: rgb(var(--pad-pink)); transform: scale(0.92); z-index: 10; }
+        .glow-red.active { box-shadow: 0 0 25px rgba(var(--pad-red), 0.8), inset 0 0 15px rgba(var(--pad-red), 0.5); border-color: rgb(var(--pad-red)); transform: scale(0.92); z-index: 10; }
+        .glow-cyan.active { box-shadow: 0 0 25px rgba(var(--pad-cyan), 0.8), inset 0 0 15px rgba(var(--pad-cyan), 0.5); border-color: rgb(var(--pad-cyan)); transform: scale(0.92); z-index: 10; }
+        .glow-teal.active { box-shadow: 0 0 25px rgba(var(--pad-teal), 0.8), inset 0 0 15px rgba(var(--pad-teal), 0.5); border-color: rgb(var(--pad-teal)); transform: scale(0.92); z-index: 10; }
+        .glow-blue.active { box-shadow: 0 0 25px rgba(var(--pad-blue), 0.8), inset 0 0 15px rgba(var(--pad-blue), 0.5); border-color: rgb(var(--pad-blue)); transform: scale(0.92); z-index: 10; }
+        .glow-indigo.active { box-shadow: 0 0 25px rgba(var(--pad-indigo), 0.8), inset 0 0 15px rgba(var(--pad-indigo), 0.5); border-color: rgb(var(--pad-indigo)); transform: scale(0.92); z-index: 10; }
+        .glow-violet.active { box-shadow: 0 0 25px rgba(var(--pad-violet), 0.8), inset 0 0 15px rgba(var(--pad-violet), 0.5); border-color: rgb(var(--pad-violet)); transform: scale(0.92); z-index: 10; }
+        .glow-yellow.active { box-shadow: 0 0 25px rgba(var(--pad-yellow), 0.8), inset 0 0 15px rgba(var(--pad-yellow), 0.5); border-color: rgb(var(--pad-yellow)); transform: scale(0.92); z-index: 10; }
+        .glow-purple.active { box-shadow: 0 0 25px rgba(var(--pad-purple), 0.8), inset 0 0 15px rgba(var(--pad-purple), 0.5); border-color: rgb(var(--pad-purple)); transform: scale(0.92); z-index: 10; }
+        .glow-green.active { box-shadow: 0 0 25px rgba(var(--pad-green), 0.8), inset 0 0 15px rgba(var(--pad-green), 0.5); border-color: rgb(var(--pad-green)); transform: scale(0.92); z-index: 10; }
+
+        .edit-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(3px);
+            border-radius: inherit;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            z-index: 20;
+            padding: 6px;
+        }
+
+        .edit-mode-active .edit-overlay {
+            display: flex;
+        }
+        
+        .edit-mode-active .drum-pad {
+            border: 2px dashed #4b5563;
+            cursor: move;
+        }
+
+        #message-box, #key-prompt {
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+        }
+
+        .keycap {
+            background: #374151;
+            border-bottom: 3px solid #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen flex flex-col bg-[#0f111a]">
+
+    <header class="w-full bg-[#151826] border-b border-gray-800 p-3 flex justify-between items-center shadow-md z-30 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-fire text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
+                <p class="text-[10px] text-gray-400">Customizable Virtual Drum Kit <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 sm:gap-4">
+            <button id="mic-connect-btn" onclick="connectMicPedal()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg cursor-pointer">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <span id="mic-btn-text"> Conect Pedal </span>
+            </button>
+            <button id="add-pad-btn" class="hidden items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg">
+                <i class="fa-solid fa-plus"></i>
+                <span class="hidden sm:inline">Add Pad</span>
+            </button>
+            <button id="reset-default-btn" class="hidden items-center gap-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-200 shadow-lg">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span class="hidden sm:inline">Reset Default</span>
+            </button>
+            <button id="edit-toggle" class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-200 shadow-lg">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                <span class="hidden sm:inline">Edit Layout & Keys</span>
+            </button>
+        </div>
+    </header>
+
+    <main id="workspace" class="flex-1 w-full relative overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-900 to-[#0f111a]">
+        <!-- Pads injected dynamically -->
+    </main>
+
+    <input type="file" id="audio-upload" accept="audio/wav, audio/mp3, audio/mpeg, audio/ogg" class="hidden">
+
+    <div id="message-box" class="fixed top-20 left-1/2 transform -translate-x-1/2 opacity-0 -translate-y-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-2xl border border-gray-700 z-50 flex items-center gap-3">
+        <i class="fa-solid fa-bell text-indigo-400"></i>
+        <span id="message-text" class="text-sm font-medium">Message</span>
+    </div>
+
+    <div id="key-prompt" class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] opacity-0" style="display: none;">
+        <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl text-center max-w-sm">
+            <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+                <i class="fa-regular fa-keyboard text-2xl text-white"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2 font-orbitron">Assign New Key</h2>
+            <p class="text-gray-400 text-sm mb-4">Press any key or foot pedal to assign it to <span id="prompt-pad-name" class="text-indigo-400 font-bold"></span>.</p>
+            <p class="text-xs text-gray-500">(Press ESC to cancel)</p>
+        </div>
+    </div>
+
+    <script>
+        let audioCtx = null;
+        let isEditMode = false;
+        let padAwaitingKey = null;
+        let customPadCount = 0;
+        const customBuffers = {};
+        const activeSources = {};
+        const workspace = document.getElementById('workspace');
+// --- [เพิ่มส่วนนี้] ตัวแปรและฟังก์ชันสำหรับดักจับสัญญาณ Pedal ผ่าน Mic ---
+        let micStream = null;
+        let micAnalyser = null;
+        let isListeningMic = false;
+        let lastStompTime = 0;
+
+        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์ (ผูกกับปุ่มบนหน้าเว็บของคุณได้เลย)
+        async function connectMicPedal() {
+            initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
+                    video: false 
+                });
+                
+                const source = audioCtx.createMediaStreamSource(micStream);
+                micAnalyser = audioCtx.createAnalyser();
+                micAnalyser.fftSize = 256;
+                source.connect(micAnalyser);
+                
+                isListeningMic = true;
+                console.log('Pedal Mic: Active & Listening');
+
+                // เริ่มรันลูปตรวจจับสัญญาณ
+                detectMicPedalStomp();
+            } catch (err) {
+                alert('Cannot access microphone: ' + err.message);
+            }
+        }
+
+        // ลูปตรวจสอบค่าพลังงานเสียงจากช่องไมค์แบบเรียลไทม์
+        function detectMicPedalStomp() {
+            if (!isListeningMic || !micAnalyser) return;
+            
+            const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+            micAnalyser.getByteTimeDomainData(dataArray);
+
+            let peak = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                let sample = Math.abs(dataArray[i] - 128);
+                if (sample > peak) peak = sample;
+            }
+
+            // ค่า Threshold (25) และ Debounce (120ms) เพื่อกันสัญญาณกวน
+            const now = Date.now();
+            if (peak > 25 && (now - lastStompTime > 120)) { 
+                triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
+                lastStompTime = now;
+            }
+
+            requestAnimationFrame(detectMicPedalStomp);
+        }
+        const DB_NAME = 'PrakaipadDB_v4';
+        const STORE_NAME = 'audioBuffers';
+        let db = null;
+
+        function initIndexedDB() {
+            return new Promise((resolve) => {
+                const request = indexedDB.open(DB_NAME, 4);
+                request.onerror = () => resolve(null);
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME);
+                    }
+                };
+            });
+        }
+
+        function saveAudioToDB(padId, blob) {
+            if (!db) return;
+            try {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.put(blob, padId);
+            } catch (err) {
+                console.error("Error saving audio to IndexedDB", err);
+            }
+        }
+
+        function loadAllAudioFromDB() {
+            return new Promise((resolve) => {
+                if (!db) { resolve({}); return; }
+                try {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const request = store.openCursor();
+                    const result = {};
+
+                    request.onsuccess = (event) => {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            result[cursor.key] = cursor.value;
+                            cursor.continue();
+                        } else {
+                            resolve(result);
+                        }
+                    };
+                    request.onerror = () => resolve({});
+                } catch (err) {
+                    resolve({});
+                }
+            });
+        }
+
+        function deleteAudioFromDB(padId) {
+            if (!db) return;
+            try {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                store.delete(padId);
+            } catch (err) {
+                console.error("Error deleting audio from IndexedDB", err);
+            }
+        }
+
+        const defaultPadsConfig = [
+            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', icon: 'fa-sun', colorHex: 'text-yellow-400', defaultSynth: 'playCrash', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', icon: 'fa-circle-dot', colorHex: 'text-purple-400', defaultSynth: 'playRide', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', icon: 'fa-drum', colorHex: 'text-blue-400', defaultSynth: 'playTom1', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', icon: 'fa-drum', colorHex: 'text-indigo-400', defaultSynth: 'playTom2', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', icon: 'fa-database', colorHex: 'text-violet-400', defaultSynth: 'playTom3', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', icon: 'fa-compact-disc', colorHex: 'text-cyan-400', defaultSynth: 'playHiHatClose', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', icon: 'fa-compact-disc', colorHex: 'text-teal-400', defaultSynth: 'playHiHatOpen', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', icon: 'fa-ring', colorHex: 'text-red-400', defaultSynth: 'playSnareRim', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', icon: 'fa-bullseye', colorHex: 'text-pink-400', defaultSynth: 'playSnareCenter', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', icon: 'fa-shoe-prints', colorHex: 'text-amber-500', defaultSynth: 'playKick', volume: 1.0, x: 0, y: 0 },
+        ];
+
+        let drumPadsConfig = [];
+
+        function saveConfigToLocalStorage() {
+            localStorage.setItem('prakaipad_config_v3', JSON.stringify(drumPadsConfig));
+        }
+
+        function loadConfigFromLocalStorage() {
+            const saved = localStorage.getItem('prakaipad_config_v3');
+            if (saved) {
+                try {
+                    drumPadsConfig = JSON.parse(saved);
+                    drumPadsConfig.forEach(p => {
+                        if (p.volume === undefined) p.volume = 1.0;
+                        if (p.id.startsWith('pad-custom-')) {
+                            const num = parseInt(p.id.replace('pad-custom-', ''));
+                            if (!isNaN(num) && num > customPadCount) customPadCount = num;
+                        }
+                    });
+                    return true;
+                } catch (e) {
+                    console.error("Failed to parse saved config", e);
+                }
+            }
+            return false;
+        }
+
+        function initializePositionsAndConfig() {
+            const loaded = loadConfigFromLocalStorage();
+            const w = workspace.clientWidth || window.innerWidth;
+            const h = workspace.clientHeight || (window.innerHeight - 80);
+
+            if (!loaded || drumPadsConfig.length === 0) {
+                drumPadsConfig = JSON.parse(JSON.stringify(defaultPadsConfig));
+                const layoutMap = {
+                    'pad-crash': {x: 0.2, y: 0.15},
+                    'pad-ride': {x: 0.8, y: 0.15},
+                    'pad-tom1': {x: 0.35, y: 0.2},
+                    'pad-tom2': {x: 0.65, y: 0.2},
+                    'pad-hh-open': {x: 0.1, y: 0.4},
+                    'pad-hh-close': {x: 0.2, y: 0.55},
+                    'pad-tom3': {x: 0.75, y: 0.45},
+                    'pad-snare-rim': {x: 0.35, y: 0.5},
+                    'pad-snare-center': {x: 0.45, y: 0.65},
+                    'pad-kick': {x: 0.5, y: 0.8}
+                };
+
+                drumPadsConfig.forEach(pad => {
+                    const pos = layoutMap[pad.id] || {x: 0.5, y: 0.5};
+                    const padSize = pad.id === 'pad-kick' ? 140 : 110;
+                    let pxX = (pos.x * w) - (padSize / 2);
+                    let pxY = (pos.y * h) - (padSize / 2);
+                    pad.x = Math.max(0, Math.min(pxX, w - padSize));
+                    pad.y = Math.max(0, Math.min(pxY, h - padSize));
+                });
+                saveConfigToLocalStorage();
+            } else {
+                drumPadsConfig.forEach(pad => {
+                    const padSize = pad.id === 'pad-kick' ? 140 : 110;
+                    if (pad.x > w - padSize) pad.x = Math.max(0, w - padSize);
+                    if (pad.y > h - padSize) pad.y = Math.max(0, h - padSize);
+                });
+            }
+        }
+
+        function renderPads() {
+            workspace.innerHTML = '';
+            drumPadsConfig.forEach(pad => {
+                createPadElement(pad);
+            });
+        }
+
+        function createPadElement(pad) {
+            const padEl = document.createElement('div');
+            padEl.className = `drum-pad ${pad.colorClass}`;
+            padEl.id = pad.id;
+            padEl.style.left = `${pad.x}px`;
+            padEl.style.top = `${pad.y}px`;
+
+            const displayKey = pad.key === ' ' ? 'SPACE' : pad.key;
+            const hasCustomAudio = customBuffers[pad.id] ? true : false;
+            const displayName = hasCustomAudio && pad.name !== 'CUSTOM' ? 'CUSTOM' : pad.name;
+            const displayIcon = hasCustomAudio ? 'fa-music' : pad.icon;
+            const currentVol = pad.volume !== undefined ? pad.volume : 1.0;
+
+            padEl.innerHTML = `
+                <i class="fa-solid ${displayIcon} text-2xl ${pad.colorHex} mb-0.5 pointer-events-none"></i>
+                <span class="font-orbitron font-bold text-[10px] text-gray-200 tracking-wide text-center pointer-events-none">${displayName}</span>
+                <div class="mt-0.5 keycap pointer-events-none key-display">${displayKey || '-'}</div>
+                
+                <div class="edit-overlay">
+                    <div class="flex items-center justify-between w-[90%] bg-gray-900/80 px-2 py-0.5 rounded text-[9px] text-gray-300">
+                        <span>Vol</span>
+                        <input type="range" min="0" max="1" step="0.05" value="${currentVol}" class="vol-slider w-16 accent-indigo-500 cursor-pointer">
+                    </div>
+                    <button class="key-btn bg-gray-700 hover:bg-gray-600 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
+                        <i class="fa-solid fa-keyboard"></i> Key
+                    </button>
+                    <button class="upload-btn bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
+                        <i class="fa-solid fa-folder-open"></i> Audio
+                    </button>
+                    <button class="delete-btn bg-red-600 hover:bg-red-500 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </div>
+            `;
+
+            padEl.addEventListener('pointerdown', (e) => {
+                if (isEditMode) return;
+                e.preventDefault();
+                triggerPad(pad.id);
+            });
+
+            workspace.appendChild(padEl);
+            setupDraggable(padEl, pad);
+            setupEditButtonsForPad(padEl, pad);
+        }
+
+        function setupDraggable(el, padConfig) {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            el.addEventListener('pointerdown', (e) => {
+                if (!isEditMode) return;
+                if (e.target.closest('button') || e.target.closest('input')) return;
+
+                isDragging = true;
+                el.setPointerCapture(e.pointerId);
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = parseFloat(el.style.left) || 0;
+                initialTop = parseFloat(el.style.top) || 0;
+                
+                el.style.zIndex = 100;
+            });
+
+            el.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                let newLeft = initialLeft + dx;
+                let newTop = initialTop + dy;
+
+                const padRect = el.getBoundingClientRect();
+                const wsRect = workspace.getBoundingClientRect();
+                
+                if (newLeft < 0) newLeft = 0;
+                if (newTop < 0) newTop = 0;
+                if (newLeft + padRect.width > wsRect.width) newLeft = wsRect.width - padRect.width;
+                if (newTop + padRect.height > wsRect.height) newTop = wsRect.height - padRect.height;
+
+                el.style.left = `${newLeft}px`;
+                el.style.top = `${newTop}px`;
+                padConfig.x = newLeft;
+                padConfig.y = newTop;
+            });
+
+            const stopDrag = (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+                el.style.zIndex = 5;
+                saveConfigToLocalStorage();
+            };
+
+            el.addEventListener('pointerup', stopDrag);
+            el.addEventListener('pointercancel', stopDrag);
+        }
+
+        let currentUploadPadId = null;
+
+        function setupEditButtonsForPad(padEl, padConfig) {
+            const volSlider = padEl.querySelector('.vol-slider');
+            volSlider.addEventListener('pointerdown', (e) => e.stopPropagation());
+            volSlider.addEventListener('input', (e) => {
+                padConfig.volume = parseFloat(e.target.value);
+                saveConfigToLocalStorage();
+            });
+
+            const keyBtn = padEl.querySelector('.key-btn');
+            keyBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+            keyBtn.addEventListener('click', () => {
+                padAwaitingKey = padConfig;
+                document.getElementById('prompt-pad-name').innerText = padConfig.name;
+                const prompt = document.getElementById('key-prompt');
+                prompt.style.display = 'flex';
+                setTimeout(() => prompt.style.opacity = '1', 10);
+            });
+
+            const uploadBtn = padEl.querySelector('.upload-btn');
+            uploadBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+            uploadBtn.addEventListener('click', () => {
+                currentUploadPadId = padConfig.id;
+                document.getElementById('audio-upload').click();
+            });
+
+            const deleteBtn = padEl.querySelector('.delete-btn');
+            deleteBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+            deleteBtn.addEventListener('click', () => {
+                if (drumPadsConfig.length <= 1) {
+                    showMessage("Cannot delete the last pad!", true);
+                    return;
+                }
+                padEl.remove();
+                drumPadsConfig = drumPadsConfig.filter(p => p.id !== padConfig.id);
+                if (customBuffers[padConfig.id]) {
+                    delete customBuffers[padConfig.id];
+                    deleteAudioFromDB(padConfig.id);
+                }
+                saveConfigToLocalStorage();
+                showMessage(`Deleted ${padConfig.name}`);
+            });
+        }
+
+        document.getElementById('add-pad-btn').addEventListener('click', () => {
+            if (drumPadsConfig.length >= 25) {
+                showMessage("Maximum number of pads reached (25).", true);
+                return;
+            }
+
+            customPadCount++;
+            const newId = `pad-custom-${customPadCount}`;
+            const colors = ['glow-green', 'glow-teal', 'glow-cyan', 'glow-blue', 'glow-pink', 'glow-amber'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const padSize = 110;
+            let newX = (workspace.clientWidth / 2) - (padSize / 2);
+            let newY = (workspace.clientHeight / 2) - (padSize / 2);
+
+            const newPad = {
+                id: newId,
+                name: `PAD ${customPadCount + 10}`,
+                key: '',
+                colorClass: randomColor,
+                icon: 'fa-square',
+                colorHex: 'text-gray-300',
+                defaultSynth: 'playTom1',
+                volume: 1.0,
+                x: newX,
+                y: newY
+            };
+
+            drumPadsConfig.push(newPad);
+            saveConfigToLocalStorage();
+            createPadElement(newPad);
+            showMessage("New pad added! Drag it anywhere.");
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.repeat) return;
+            
+            let keyStr = e.key.toUpperCase();
+            if (e.code === 'Space') keyStr = 'SPACE';
+
+            if (padAwaitingKey) {
+                if (e.key === 'Escape') {
+                    closeKeyPrompt();
+                    return;
+                }
+                
+                drumPadsConfig.forEach(p => {
+                    if (p.key === keyStr) p.key = '';
+                });
+
+                padAwaitingKey.key = keyStr;
+                saveConfigToLocalStorage();
+                renderPads();
+                
+                showMessage(`Key '${keyStr}' assigned to ${padAwaitingKey.name}`);
+                closeKeyPrompt();
+                return;
+            }
+
+            if (isEditMode) return;
+
+            const pad = drumPadsConfig.find(p => p.key === keyStr);
+            if (pad) {
+                e.preventDefault();
+                triggerPad(pad.id);
+            }
+        });
+
+        function closeKeyPrompt() {
+            const prompt = document.getElementById('key-prompt');
+            prompt.style.opacity = '0';
+            setTimeout(() => {
+                prompt.style.display = 'none';
+                padAwaitingKey = null;
+            }, 300);
+        }
+
+        document.getElementById('audio-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUploadPadId) return;
+
+            initAudio();
+
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const arrayBuffer = ev.target.result;
+                const blob = new Blob([arrayBuffer], { type: file.type });
+                
+                audioCtx.decodeAudioData(arrayBuffer.slice(0), function(buffer) {
+                    customBuffers[currentUploadPadId] = buffer;
+                    saveAudioToDB(currentUploadPadId, blob);
+                    renderPads();
+                    showMessage("Audio loaded and saved permanently!");
+                }, function(err) {
+                    showMessage("Error decoding audio file.", true);
+                    console.error(err);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+            this.value = '';
+        });
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function stopActiveSource(id) {
+            if (activeSources[id]) {
+                try {
+                    activeSources[id].stop();
+                    activeSources[id].disconnect();
+                } catch (e) {}
+                activeSources[id] = null;
+            }
+        }
+
+        function triggerPad(id) {
+            initAudio();
+            stopActiveSource(id);
+            
+            const padEl = document.getElementById(id);
+            if (padEl) {
+                padEl.classList.remove('active');
+                void padEl.offsetWidth;
+                padEl.classList.add('active');
+                setTimeout(() => padEl.classList.remove('active'), 100);
+            }
+
+            const padConf = drumPadsConfig.find(p => p.id === id);
+            const padVol = padConf && padConf.volume !== undefined ? padConf.volume : 1.0;
+
+            if (customBuffers[id]) {
+                playCustomBuffer(id, customBuffers[id], padVol);
+            } else {
+                if (padConf && padConf.defaultSynth && window[padConf.defaultSynth]) {
+                    window[padConf.defaultSynth](id, padVol);
+                } else {
+                    playTom1(id, padVol);
+                }
+            }
+        }
+
+        function playCustomBuffer(id, buffer, volume = 1.0) {
+            const source = audioCtx.createBufferSource();
+            const gainNode = audioCtx.createGain();
+            source.buffer = buffer;
+            gainNode.gain.value = volume;
+            source.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            source.start(0);
+
+            activeSources[id] = source;
+            source.onended = () => {
+                if (activeSources[id] === source) {
+                    activeSources[id] = null;
+                }
+            };
+        }
+
+        function playKick(id, volume = 1.0) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(0.01, now + 0.5);
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            
+            osc.start(now);
+            osc.stop(now + 0.5);
+            activeSources[id] = osc;
+        }
+
+        function playSnareCenter(id, volume = 1.0) {
+            const osc = audioCtx.createOscillator();
+            const oscGain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.connect(oscGain);
+            oscGain.connect(audioCtx.destination);
+            
+            const bufferSize = audioCtx.sampleRate * 0.2;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'highpass';
+            noiseFilter.frequency.value = 1000;
+            const noiseGain = audioCtx.createGain();
+            
+            noise.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            
+            osc.frequency.setValueAtTime(250, now);
+            oscGain.gain.setValueAtTime(0.7 * volume, now);
+            oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            noiseGain.gain.setValueAtTime(volume, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+            osc.start(now);
+            noise.start(now);
+            osc.stop(now + 0.2);
+            activeSources[id] = noise;
+        }
+
+        function playSnareRim(id, volume = 1.0) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            gain.gain.setValueAtTime(0.8 * volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            
+            osc.start(now);
+            osc.stop(now + 0.1);
+            activeSources[id] = osc;
+        }
+
+        function playHiHatClose(id, volume = 1.0) { createCymbalSound(id, 0.1, 5000, 0.5 * volume); }
+        function playHiHatOpen(id, volume = 1.0) { createCymbalSound(id, 0.4, 4000, 0.4 * volume); }
+        function playCrash(id, volume = 1.0) { createCymbalSound(id, 1.5, 2000, 0.8 * volume); }
+        function playRide(id, volume = 1.0) { createCymbalSound(id, 1.2, 6000, 0.6 * volume, true); }
+
+        function createCymbalSound(id, duration, freq, volume, isRide = false) {
+            const ratios = isRide ? [1, 1.2, 1.6, 2.3, 3.1] : [1, 1.48, 1.93, 2.54, 2.61, 3.89];
+            const gain = audioCtx.createGain();
+            const bandpass = audioCtx.createBiquadFilter();
+            
+            bandpass.type = 'bandpass';
+            bandpass.frequency.value = freq;
+            bandpass.Q.value = 1;
+            
+            gain.connect(bandpass);
+            bandpass.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+            ratios.forEach((ratio, idx) => {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'square';
+                osc.frequency.value = 400 * ratio;
+                osc.connect(gain);
+                osc.start(now);
+                osc.stop(now + duration);
+                if (idx === 0) activeSources[id] = osc;
+            });
+        }
+
+        function playTom1(id, volume = 1.0) { playTom(id, 300, 0.4, volume); }
+        function playTom2(id, volume = 1.0) { playTom(id, 200, 0.5, volume); }
+        function playTom3(id, volume = 1.0) { playTom(id, 100, 0.6, volume); }
+
+        function playTom(id, baseFreq, duration, volume = 1.0) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(baseFreq * 1.5, now);
+            osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.1);
+            gain.gain.setValueAtTime(volume, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+            
+            osc.start(now);
+            osc.stop(now + duration);
+            activeSources[id] = osc;
+        }
+
+        function showMessage(text, isError = false) {
+            const msgBox = document.getElementById('message-box');
+            document.getElementById('message-text').innerText = text;
+            
+            msgBox.classList.remove('bg-gray-800', 'bg-red-900', 'border-gray-700', 'border-red-700');
+            if (isError) {
+                msgBox.classList.add('bg-red-900', 'border-red-700');
+            } else {
+                msgBox.classList.add('bg-gray-800', 'border-gray-700');
+            }
+
+            msgBox.classList.remove('opacity-0', '-translate-y-4');
+            msgBox.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                msgBox.classList.remove('opacity-100', 'translate-y-0');
+                msgBox.classList.add('opacity-0', '-translate-y-4');
+            }, 3000);
+        }
+
+        const editToggle = document.getElementById('edit-toggle');
+        const addPadBtn = document.getElementById('add-pad-btn');
+        const resetDefaultBtn = document.getElementById('reset-default-btn');
+        const ws = document.getElementById('workspace');
+        
+        editToggle.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            if (isEditMode) {
+                ws.classList.add('edit-mode-active');
+                editToggle.classList.replace('bg-gray-800', 'bg-indigo-600');
+                editToggle.classList.replace('text-gray-200', 'text-white');
+                editToggle.innerHTML = '<i class="fa-solid fa-check"></i> <span class="hidden sm:inline">Done Editing</span>';
+                addPadBtn.classList.remove('hidden');
+                addPadBtn.classList.add('flex');
+                resetDefaultBtn.classList.remove('hidden');
+                resetDefaultBtn.classList.add('flex');
+            } else {
+                ws.classList.remove('edit-mode-active');
+                editToggle.classList.replace('bg-indigo-600', 'bg-gray-800');
+                editToggle.classList.replace('text-white', 'text-gray-200');
+                editToggle.innerHTML = '<i class="fa-solid fa-arrows-up-down-left-right"></i> <span class="hidden sm:inline">Edit Layout & Keys</span>';
+                addPadBtn.classList.add('hidden');
+                addPadBtn.classList.remove('flex');
+                resetDefaultBtn.classList.add('hidden');
+                resetDefaultBtn.classList.remove('flex');
+            }
+        });
+
+        resetDefaultBtn.addEventListener('click', () => {
+            if (confirm("Reset layout, volume, and custom keys to default?")) {
+                localStorage.removeItem('prakaipad_config_v3');
+                if (db) {
+                    try {
+                        const tx = db.transaction([STORE_NAME], 'readwrite');
+                        tx.objectStore(STORE_NAME).clear();
+                    } catch (e) {}
+                }
+                location.reload();
+            }
+        });
+
+        window.addEventListener('load', async () => {
+            await initIndexedDB();
+            initializePositionsAndConfig();
+
+            const savedAudioBlobs = await loadAllAudioFromDB();
+            if (savedAudioBlobs && Object.keys(savedAudioBlobs).length > 0) {
+                initAudio();
+                for (const padId in savedAudioBlobs) {
+                    try {
+                        const blob = savedAudioBlobs[padId];
+                        if (blob) {
+                            const arrayBuffer = await blob.arrayBuffer();
+                            audioCtx.decodeAudioData(arrayBuffer, (decoded) => {
+                                customBuffers[padId] = decoded;
+                                renderPads();
+                            }, (err) => {
+                                console.error("Failed decoding stored audio for pad", padId, err);
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Error processing saved audio for pad", padId, e);
+                    }
+                }
+            }
+
+            renderPads();
+        });
+    </script>
+</body>
+</html>
