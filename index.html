@@ -128,7 +128,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.09.28.16.55 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.06 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -187,18 +187,22 @@
         let micAnalyser = null;
         let isListeningMic = false;
         let lastStompTime = 0;
-        const debounceTime = 120; // หน่วงเวลา 120ms เพื่อให้ทันความเร็ว 150 BPM และกันเบิ้ล
+        const debounceTime = 120; 
         let lastAverage = 128;    
+        let micStream = null;
+        let micAnalyser = null;
+        let isListeningMic = false;
 
-        // ฟังก์ชันเชื่อมต่อไมค์
+        // ฟังก์ชันเชื่อมต่อไมค์แบบป้องกัน Error ครบถ้วน
         async function connectMicPedal() {
-            if (typeof initAudio === 'function') {
-                initAudio(); 
-            } else if (!window.audioCtx) {
+            if (isListeningMic) return;
+
+            // ตรวจสอบและสร้าง AudioContext ทันทีถ้ายังไม่มี
+            if (!window.audioCtx) {
                 const AudioContextClass = window.AudioContext || window.webkitAudioContext;
                 window.audioCtx = new AudioContextClass();
             }
-            if (window.audioCtx && window.audioCtx.state === 'suspended') {
+            if (window.audioCtx.state === 'suspended') {
                 window.audioCtx.resume();
             }
 
@@ -229,7 +233,7 @@
             }
         }
 
-        // ลูปตรวจจับสัญญาณแบบไม่ติดล็อกค้าง
+        // ลูปตรวจจับสัญญาณ
         function detectMicPedalStomp() {
             if (!isListeningMic || !micAnalyser) return;
             
@@ -252,9 +256,6 @@
 
             const now = Date.now();
 
-            // เงื่อนไขทริก: 
-            // - รองรับไมค์/กลองไฟฟ้า (peak > 15)
-            // - รองรับเปดัลคีย์บอร์ด (เมื่อมีการกดสลับสถานะ ทำให้ค่าเฉลี่ยกระโดด diff > 1.5)
             let isTriggered = (peak > 15) || (diff > 1.5);
 
             if (isTriggered && (now - lastStompTime > debounceTime)) { 
