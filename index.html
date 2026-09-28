@@ -187,32 +187,10 @@
         let micAnalyser = null;
         let isListeningMic = false;
         let lastStompTime = 0;
+        const fastDebounceTime = 110; // ลดเวลาหน่วงเหลือ 110ms เพื่อให้ทันความเร็ว 150 BPM เขเบ็ด (200ms ต่อโน้ต)
+        let isReleased = true;    
+        let lastAverage = 128;    
 
-        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์ (ผูกกับปุ่มบนหน้าเว็บของคุณได้เลย)
-        async function connectMicPedal() {
-            initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
-            try {
-                micStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
-                    video: false 
-                });
-                
-                const source = audioCtx.createMediaStreamSource(micStream);
-                micAnalyser = audioCtx.createAnalyser();
-                micAnalyser.fftSize = 256;
-                source.connect(micAnalyser);
-                
-                isListeningMic = true;
-                console.log('Pedal Mic: Active & Listening');
-
-                // เริ่มรันลูปตรวจจับสัญญาณ
-                detectMicPedalStomp();
-            } catch (err) {
-                alert('Cannot access microphone: ' + err.message);
-            }
-        }
-
-        // ลูปตรวจสอบค่าพลังงานเสียงจากช่องไมค์แบบเรียลไทม์
         function detectMicPedalStomp() {
             if (!isListeningMic || !micAnalyser) return;
             
@@ -220,16 +198,35 @@
             micAnalyser.getByteTimeDomainData(dataArray);
 
             let peak = 0;
+            let sum = 0;
+
             for (let i = 0; i < dataArray.length; i++) {
-                let sample = Math.abs(dataArray[i] - 128);
-                if (sample > peak) peak = sample;
+                let sample = dataArray[i];
+                let absSample = Math.abs(sample - 128);
+                if (absSample > peak) peak = absSample;
+                sum += sample;
+            }
+            
+            let currentAverage = sum / dataArray.length;
+            let diff = Math.abs(currentAverage - lastAverage);
+            lastAverage = currentAverage; 
+
+            const now = Date.now();
+
+            // ปรับเกณฑ์การปล่อยเปดัลให้ไวขึ้นตามสปีด
+            if (peak < 6 && diff < 1.0) {
+                isReleased = true;
             }
 
-            // ค่า Threshold (25) และ Debounce (120ms) เพื่อกันสัญญาณกวน
-            const now = Date.now();
-            if (peak > 25 && (now - lastStompTime > 120)) { 
-                triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
+            let isTriggered = (peak > 30) || (diff > 2.5);
+
+            // ใช้ fastDebounceTime ที่สั้นลง (110ms) ทำให้เหยียบถี่ๆ รัวๆ ทัน
+            if (isTriggered && isReleased && (now - lastStompTime > fastDebounceTime)) { 
+                if (typeof triggerPad === 'function') {
+                    triggerPad('pad-kick'); 
+                }
                 lastStompTime = now;
+                isReleased = false; 
             }
 
             requestAnimationFrame(detectMicPedalStomp);
