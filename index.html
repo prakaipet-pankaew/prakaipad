@@ -297,28 +297,41 @@
             requestAnimationFrame(detectDrumPedalLoop);
         }
 
-        // --- โหมดที่ 2: คีย์บอร์ด (Sustain Pedal) - เน้นตรวจจับการเปลี่ยนสถานะวงจรไฟฟ้า (Step Change) ---
-        let lastAverage = 128;
+// --- โหมดที่ 2: คีย์บอร์ด (Sustain Pedal) - ปรับปรุงใหม่ตัดปัญหารัวค้าง ---
+        let isKeyReleased = true;
+
         function detectKeyboardPedalLoop() {
             if (!isListeningMic || currentPedalMode !== 'keyboard') return;
             
             const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
             micAnalyser.getByteTimeDomainData(dataArray);
 
+            // หาค่ากลาง (DC Offset) ของสัญญาณปัจจุบัน
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) {
                 sum += dataArray[i];
             }
             let currentAverage = sum / dataArray.length;
-            let diff = Math.abs(currentAverage - lastAverage);
-            lastAverage = currentAverage;
 
             const now = Date.now();
-            
-            // ตรวจจับเมื่อมีการเหยียบหรือปล่อยสวิตช์คีย์บอร์ด (ค่าเฉลี่ยกระโดด)
-            if (diff > 2.0 && (now - lastStompTime > 150)) {
+
+            // สมมติว่าสถานะปกติ (ปล่อยค้างไว้) ค่าเฉลี่ยจะนิ่งอยู่แถวๆ 128
+            // เมื่อเราเหยียบเปดัล สัญญาณไฟจะกระโดดขึ้นหรือตกลงจาก 128 อย่างชัดเจน
+            let deviation = Math.abs(currentAverage - 128);
+
+            // 1. ถ้าสัญญาณตกลงมาใกล้ 128 (ค่าความต่างน้อยกว่า 3) แปลว่าปล่อยเปดัลแล้ว พร้อมรับครั้งถัดไป
+            if (deviation < 3) {
+                isKeyReleased = true;
+            }
+
+            // 2. เงื่อนไขทริก: 
+            // - Deviation ต้องเกิน 8 ขึ้นไป (แสดงว่ามีการกดสวิตช์เปลี่ยนสถานะจริงจัง)
+            // - isKeyReleased ต้องเป็น true (ป้องกันการลั่นรัวซ้ำๆ ขณะเหยียบแช่)
+            // - หน่วงเวลา 150ms เพื่อความเสถียร
+            if (deviation > 8 && isKeyReleased && (now - lastStompTime > 150)) {
                 triggerPad('pad-kick');
                 lastStompTime = now;
+                isKeyReleased = false; // ล็อกไว้จนกว่าจะยกเท้าปล่อย
             }
 
             requestAnimationFrame(detectKeyboardPedalLoop);
