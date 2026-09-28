@@ -128,7 +128,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.09.28.18.07 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.47 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -231,7 +231,9 @@
             if (modal) modal.style.display = 'none';
         }
 
-        // 2. เริ่มต้นเปิดไมค์และเลือกรันลูปตามโหมดที่ผู้ใช้กดเลือก
+        // --- 2. เริ่มต้นเปิดไมค์และเลือกรันลูปตามโหมดที่ผู้ใช้กดเลือก (มีระบบคาลิเบทค่ากลางอัตโนมัติ) ---
+        let baselineValue = 128; // ตัวเก็บค่ากลางนิ่งๆ ตอนเริ่มต้น
+
         async function startPedalMode(mode) {
             currentPedalMode = mode;
             closePedalModal();
@@ -259,18 +261,35 @@
                     btnText.innerHTML = `<span class="text-emerald-400 font-semibold">${mode === 'drum' ? 'Drum Pedal Connected' : 'Keyboard Pedal Connected'}</span>`;
                 }
 
-                // แยกฟังก์ชันรันตามประเภทอุปกรณ์โดยเฉพาะ
-                if (currentPedalMode === 'drum') {
-                    detectDrumPedalLoop();
+                // ทำการคาลิเบทวัดค่าเฉลี่ยตั้งต้นของไมค์เป็นเวลา 0.5 วินาทีแรก เพื่อความนิ่ง
+                if (currentPedalMode === 'keyboard') {
+                    let calibSum = 0;
+                    let calibCount = 0;
+                    let calibInterval = setInterval(() => {
+                        const tempArray = new Uint8Array(micAnalyser.frequencyBinCount);
+                        micAnalyser.getByteTimeDomainData(tempArray);
+                        let s = 0;
+                        for(let i=0; i<tempArray.length; i++) s += tempArray[i];
+                        calibSum += (s / tempArray.length);
+                        calibCount++;
+                    }, 20);
+
+                    setTimeout(() => {
+                        clearInterval(calibInterval);
+                        baselineValue = calibSum / calibCount;
+                        console.log('Keyboard Pedal Baseline set to:', baselineValue);
+                        detectKeyboardPedalLoop(); // เริ่มรันลูปจริงหลังจากคาลิเบทเสร็จ
+                    }, 500);
                 } else {
-                    detectKeyboardPedalLoop();
+                    detectDrumPedalLoop();
                 }
+
             } catch (err) {
                 alert('Cannot access microphone: ' + err.message);
             }
         }
 
-        // --- โหมดที่ 1: กลองไฟฟ้า (Hi-Hat Pedal) - เน้นความเร็วสูง 200 BPM และกันเบิ้ลรัว ---
+        // --- โหมดที่ 1: กลองไฟฟ้า (Hi-Hat Pedal) ---
         let isDrumReleased = true;
         function detectDrumPedalLoop() {
             if (!isListeningMic || currentPedalMode !== 'drum') return;
@@ -287,7 +306,6 @@
             const now = Date.now();
             if (peak < 8) isDrumReleased = true;
 
-            // หน่วงเวลา 90ms รองรับ 200 BPM และเช็ค Peak ความดัง
             if (peak > 25 && isDrumReleased && (now - lastStompTime > 90)) { 
                 triggerPad('pad-kick'); 
                 lastStompTime = now;
@@ -297,7 +315,7 @@
             requestAnimationFrame(detectDrumPedalLoop);
         }
 
-// --- โหมดที่ 2: คีย์บอร์ด (Sustain Pedal) - ปรับปรุงใหม่ตัดปัญหารัวค้าง ---
+        // --- โหมดที่ 2: คีย์บอร์ด (Sustain Pedal) - เทียบกับค่า Baseline ที่คาลิเบทมาสดๆ ร้อนๆ ---
         let isKeyReleased = true;
 
         function detectKeyboardPedalLoop() {
@@ -306,7 +324,6 @@
             const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
             micAnalyser.getByteTimeDomainData(dataArray);
 
-            // หาค่ากลาง (DC Offset) ของสัญญาณปัจจุบัน
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) {
                 sum += dataArray[i];
@@ -315,23 +332,19 @@
 
             const now = Date.now();
 
-            // สมมติว่าสถานะปกติ (ปล่อยค้างไว้) ค่าเฉลี่ยจะนิ่งอยู่แถวๆ 128
-            // เมื่อเราเหยียบเปดัล สัญญาณไฟจะกระโดดขึ้นหรือตกลงจาก 128 อย่างชัดเจน
-            let deviation = Math.abs(currentAverage - 128);
+            // เอาค่าปัจจุบันมาเทียบกับ baselineValue ที่นิ่งแล้ว (ไม่ใช่เลข 128 ตายตัว)
+            let deviation = Math.abs(currentAverage - baselineValue);
 
-            // 1. ถ้าสัญญาณตกลงมาใกล้ 128 (ค่าความต่างน้อยกว่า 3) แปลว่าปล่อยเปดัลแล้ว พร้อมรับครั้งถัดไป
-            if (deviation < 3) {
+            // ถ้าสัญญาณกลับมาใกล้เคียงค่าเริ่มต้น (ต่างกันไม่เกิน 2.5) ถือว่าปล่อยเปดัลแล้ว
+            if (deviation < 2.5) {
                 isKeyReleased = true;
             }
 
-            // 2. เงื่อนไขทริก: 
-            // - Deviation ต้องเกิน 8 ขึ้นไป (แสดงว่ามีการกดสวิตช์เปลี่ยนสถานะจริงจัง)
-            // - isKeyReleased ต้องเป็น true (ป้องกันการลั่นรัวซ้ำๆ ขณะเหยียบแช่)
-            // - หน่วงเวลา 150ms เพื่อความเสถียร
-            if (deviation > 8 && isKeyReleased && (now - lastStompTime > 150)) {
+            // เงื่อนไขทริก: เมื่อเหยียบสวิตช์แล้วค่าเปลี่ยนไปเกิน 6 และอยู่ในสถานะพร้อม
+            if (deviation > 6 && isKeyReleased && (now - lastStompTime > 200)) {
                 triggerPad('pad-kick');
                 lastStompTime = now;
-                isKeyReleased = false; // ล็อกไว้จนกว่าจะยกเท้าปล่อย
+                isKeyReleased = false; // ล็อกจนกว่าจะยกเท้าปล่อย
             }
 
             requestAnimationFrame(detectKeyboardPedalLoop);
