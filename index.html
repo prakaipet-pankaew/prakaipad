@@ -128,7 +128,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Customizable Virtual Drum Kit <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.16.55 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -186,51 +186,86 @@
         let micStream = null;
         let micAnalyser = null;
         let isListeningMic = false;
-        let lastStompTime = 0;
-        const fastDebounceTime = 110; // ลดเวลาหน่วงเหลือ 110ms เพื่อให้ทันความเร็ว 150 BPM เขเบ็ด (200ms ต่อโน้ต)
-        let isReleased = true;    
-        let lastAverage = 128;    
+let lastStompTime = 0;
+const debounceTime = 120; // หน่วงเวลา 120ms เพื่อให้ทันความเร็ว 150 BPM และกันเบิ้ล
+let lastAverage = 128;    
 
-        function detectMicPedalStomp() {
-            if (!isListeningMic || !micAnalyser) return;
-            
-            const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
-            micAnalyser.getByteTimeDomainData(dataArray);
+// ฟังก์ชันเชื่อมต่อไมค์
+async function connectMicPedal() {
+    if (typeof initAudio === 'function') {
+        initAudio(); 
+    } else if (!window.audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        window.audioCtx = new AudioContextClass();
+    }
+    if (window.audioCtx && window.audioCtx.state === 'suspended') {
+        window.audioCtx.resume();
+    }
 
-            let peak = 0;
-            let sum = 0;
+    try {
+        micStream = await navigator.mediaDevices.getUserMedia({ 
+            audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
+            video: false 
+        });
+        
+        const source = window.audioCtx.createMediaStreamSource(micStream);
+        micAnalyser = window.audioCtx.createAnalyser();
+        micAnalyser.fftSize = 256;
+        source.connect(micAnalyser);
+        
+        isListeningMic = true;
 
-            for (let i = 0; i < dataArray.length; i++) {
-                let sample = dataArray[i];
-                let absSample = Math.abs(sample - 128);
-                if (absSample > peak) peak = absSample;
-                sum += sample;
-            }
-            
-            let currentAverage = sum / dataArray.length;
-            let diff = Math.abs(currentAverage - lastAverage);
-            lastAverage = currentAverage; 
-
-            const now = Date.now();
-
-            // ปรับเกณฑ์การปล่อยเปดัลให้ไวขึ้นตามสปีด
-            if (peak < 15 && diff < 2.0) {
-                isReleased = true;
-            }
-
-            let isTriggered = (peak > 5) || (diff > 0.8);
-
-            // ใช้ fastDebounceTime ที่สั้นลง (110ms) ทำให้เหยียบถี่ๆ รัวๆ ทัน
-            if (isTriggered && isReleased && (now - lastStompTime > fastDebounceTime)) { 
-                if (typeof triggerPad === 'function') {
-                    triggerPad('pad-kick'); 
-                }
-                lastStompTime = now;
-                isReleased = false; 
-            }
-
-            requestAnimationFrame(detectMicPedalStomp);
+        // เปลี่ยนสถานะปุ่มเมื่อเชื่อมต่อสำเร็จ
+        const btn = document.getElementById('mic-connect-btn');
+        const btnText = document.getElementById('mic-btn-text');
+        if (btn && btnText) {
+            btn.className = "flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-300 shadow-lg cursor-default";
+            btnText.innerHTML = '<span class="text-emerald-400 font-semibold">Pedal Connected</span>';
         }
+
+        detectMicPedalStomp();
+    } catch (err) {
+        alert('Cannot access microphone: ' + err.message);
+    }
+}
+
+// ลูปตรวจจับสัญญาณแบบไม่ติดล็อกค้าง
+function detectMicPedalStomp() {
+    if (!isListeningMic || !micAnalyser) return;
+    
+    const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+    micAnalyser.getByteTimeDomainData(dataArray);
+
+    let peak = 0;
+    let sum = 0;
+
+    for (let i = 0; i < dataArray.length; i++) {
+        let sample = dataArray[i];
+        let absSample = Math.abs(sample - 128);
+        if (absSample > peak) peak = absSample;
+        sum += sample;
+    }
+    
+    let currentAverage = sum / dataArray.length;
+    let diff = Math.abs(currentAverage - lastAverage);
+    lastAverage = currentAverage; 
+
+    const now = Date.now();
+
+    // เงื่อนไขทริก: 
+    // - รองรับไมค์/กลองไฟฟ้า (peak > 15)
+    // - รองรับเปดัลคีย์บอร์ด (เมื่อมีการกดสลับสถานะ ทำให้ค่าเฉลี่ยกระโดด diff > 1.5)
+    let isTriggered = (peak > 15) || (diff > 1.5);
+
+    if (isTriggered && (now - lastStompTime > debounceTime)) { 
+        if (typeof triggerPad === 'function') {
+            triggerPad('pad-kick'); 
+        }
+        lastStompTime = now;
+    }
+
+    requestAnimationFrame(detectMicPedalStomp);
+}
         const DB_NAME = 'PrakaipadDB_v4';
         const STORE_NAME = 'audioBuffers';
         let db = null;
