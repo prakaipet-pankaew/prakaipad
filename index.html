@@ -128,7 +128,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.23 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.35 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -183,12 +183,14 @@
         const activeSources = {};
         const workspace = document.getElementById('workspace');
 // --- [เพิ่มส่วนนี้] ตัวแปรและฟังก์ชันสำหรับดักจับสัญญาณ Pedal ผ่าน Mic ---
+// --- [แก้ไขส่วนนี้] ตัวแปรและฟังก์ชันดักจับสัญญาณ Pedal สำหรับ Hi-Hat (รองรับความเร็วสูง 200 BPM และกันเบิ้ล) ---
         let micStream = null;
         let micAnalyser = null;
         let isListeningMic = false;
         let lastStompTime = 0;
+        let isPedalReleased = true; // ตัวเช็คสถานะการยกเท้า เพื่อป้องกันการเบิ้ลรัว
 
-        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์ (ผูกกับปุ่มบนหน้าเว็บของคุณได้เลย)
+        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์
         async function connectMicPedal() {
             initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
             try {
@@ -212,7 +214,7 @@
             }
         }
 
-        // ลูปตรวจสอบค่าพลังงานเสียงจากช่องไมค์แบบเรียลไทม์
+        // ลูปตรวจสอบค่าพลังงานเสียงแบบเรียลไทม์ (จูนสำหรับ Hi-Hat เปดัล + 200 BPM + กันเบิ้ล)
         function detectMicPedalStomp() {
             if (!isListeningMic || !micAnalyser) return;
             
@@ -225,11 +227,21 @@
                 if (sample > peak) peak = sample;
             }
 
-            // ค่า Threshold (25) และ Debounce (120ms) เพื่อกันสัญญาณกวน
             const now = Date.now();
-            if (peak > 25 && (now - lastStompTime > 120)) { 
+
+            // 1. ถ้าสัญญาณความดังตกลงมาต่ำกว่า 8 ถือว่ายกเท้าปล่อยเปดัลแล้ว พร้อมรับฮิตถัดไป
+            if (peak < 8) {
+                isPedalReleased = true;
+            }
+
+            // 2. เงื่อนไขทริก: 
+            // - Peak ต้องเกิน 25 (ความดังเหมาะสมกับเปดัล Hi-Hat)
+            // - isPedalReleased ต้องเป็น true (ป้องกันการเบิ้ลค้างตอนหน้าสัมผัสเด้ง)
+            // - หน่วงเวลา 90ms (รองรับสปีดความเร็วสูงระดับ 200 BPM ได้สบาย และช่วยตัดหางเสียงกระเด้ง)
+            if (peak > 25 && isPedalReleased && (now - lastStompTime > 90)) { 
                 triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
                 lastStompTime = now;
+                isPedalReleased = false; // ล็อกทันที รอจนกว่าจะยกเท้าปล่อย
             }
 
             requestAnimationFrame(detectMicPedalStomp);
