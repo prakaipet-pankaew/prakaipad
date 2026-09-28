@@ -218,7 +218,7 @@
                 isReleased = true;
             }
 
-            let isTriggered = (peak > 30) || (diff > 2.5);
+            let isTriggered = (peak > 5) || (diff > 0.8);
 
             // ใช้ fastDebounceTime ที่สั้นลง (110ms) ทำให้เหยียบถี่ๆ รัวๆ ทัน
             if (isTriggered && isReleased && (now - lastStompTime > fastDebounceTime)) { 
