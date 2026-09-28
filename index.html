@@ -128,14 +128,14 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.35 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.47 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
         <div class="flex items-center gap-2 sm:gap-4">
             <button id="mic-connect-btn" onclick="connectMicPedal()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg cursor-pointer">
                 <i class="fa-solid fa-microphone-lines"></i>
-                <span id="mic-btn-text"> Conect Pedal </span>
+                <span id="mic-btn-text"> Connect Pedal </span>
             </button>
             <button id="add-pad-btn" class="hidden items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg">
                 <i class="fa-solid fa-plus"></i>
@@ -184,15 +184,59 @@
         const workspace = document.getElementById('workspace');
 // --- [เพิ่มส่วนนี้] ตัวแปรและฟังก์ชันสำหรับดักจับสัญญาณ Pedal ผ่าน Mic ---
 // --- [แก้ไขส่วนนี้] ตัวแปรและฟังก์ชันดักจับสัญญาณ Pedal สำหรับ Hi-Hat (รองรับความเร็วสูง 200 BPM และกันเบิ้ล) ---
+// --- [ส่วนจัดการ Pop-up และแยกโหมดเปดัลอิสระ] ---
         let micStream = null;
         let micAnalyser = null;
         let isListeningMic = false;
         let lastStompTime = 0;
-        let isPedalReleased = true; // ตัวเช็คสถานะการยกเท้า เพื่อป้องกันการเบิ้ลรัว
+        let currentPedalMode = 'drum'; // โหมดเริ่มต้น
 
-        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์
-        async function connectMicPedal() {
-            initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
+        // 1. เมื่อกดปุ่มบนเว็บ ให้แสดง Pop-up เลือกระบบเปดัล
+        function connectMicPedal() {
+            if (isListeningMic) return;
+            
+            // สร้าง Pop-up ถ้ายังไม่มีในหน้าเว็บ
+            let modal = document.getElementById('pedal-select-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pedal-select-modal';
+                modal.className = 'fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100]';
+                modal.innerHTML = `
+                    <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl text-center max-w-xs w-full mx-4">
+                        <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <i class="fa-solid fa-plug text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 font-orbitron">Select Pedal Type</h3>
+                        <p class="text-gray-400 text-xs mb-4">Choose your hardware connection:</p>
+                        <div class="flex flex-col gap-2.5">
+                            <button onclick="startPedalMode('drum')" class="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer">
+                                <i class="fa-solid fa-drum"></i> Drum Pedal (Hi-Hat)
+                            </button>
+                            <button onclick="startPedalMode('keyboard')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 text-sm shadow-md cursor-pointer">
+                                <i class="fa-solid fa-keyboard"></i> Keyboard Sustain Pedal
+                            </button>
+                            <button onclick="closePedalModal()" class="bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 px-4 rounded-xl transition text-xs mt-1 cursor-pointer">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closePedalModal() {
+            const modal = document.getElementById('pedal-select-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // 2. เริ่มต้นเปิดไมค์และเลือกรันลูปตามโหมดที่ผู้ใช้กดเลือก
+        async function startPedalMode(mode) {
+            currentPedalMode = mode;
+            closePedalModal();
+            initAudio();
+
             try {
                 micStream = await navigator.mediaDevices.getUserMedia({ 
                     audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
@@ -205,18 +249,31 @@
                 source.connect(micAnalyser);
                 
                 isListeningMic = true;
-                console.log('Pedal Mic: Active & Listening');
+                console.log('Pedal Mode Active: ' + mode);
 
-                // เริ่มรันลูปตรวจจับสัญญาณ
-                detectMicPedalStomp();
+                // เปลี่ยนข้อความบนปุ่มหลัก
+                const btn = document.getElementById('mic-connect-btn');
+                const btnText = document.getElementById('mic-btn-text');
+                if (btn && btnText) {
+                    btn.className = "flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-300 shadow-lg cursor-default";
+                    btnText.innerHTML = `<span class="text-emerald-400 font-semibold">${mode === 'drum' ? 'Drum Pedal Connected' : 'Keyboard Pedal Connected'}</span>`;
+                }
+
+                // แยกฟังก์ชันรันตามประเภทอุปกรณ์โดยเฉพาะ
+                if (currentPedalMode === 'drum') {
+                    detectDrumPedalLoop();
+                } else {
+                    detectKeyboardPedalLoop();
+                }
             } catch (err) {
                 alert('Cannot access microphone: ' + err.message);
             }
         }
 
-        // ลูปตรวจสอบค่าพลังงานเสียงแบบเรียลไทม์ (จูนสำหรับ Hi-Hat เปดัล + 200 BPM + กันเบิ้ล)
-        function detectMicPedalStomp() {
-            if (!isListeningMic || !micAnalyser) return;
+        // --- โหมดที่ 1: กลองไฟฟ้า (Hi-Hat Pedal) - เน้นความเร็วสูง 200 BPM และกันเบิ้ลรัว ---
+        let isDrumReleased = true;
+        function detectDrumPedalLoop() {
+            if (!isListeningMic || currentPedalMode !== 'drum') return;
             
             const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
             micAnalyser.getByteTimeDomainData(dataArray);
@@ -228,23 +285,43 @@
             }
 
             const now = Date.now();
+            if (peak < 8) isDrumReleased = true;
 
-            // 1. ถ้าสัญญาณความดังตกลงมาต่ำกว่า 8 ถือว่ายกเท้าปล่อยเปดัลแล้ว พร้อมรับฮิตถัดไป
-            if (peak < 8) {
-                isPedalReleased = true;
-            }
-
-            // 2. เงื่อนไขทริก: 
-            // - Peak ต้องเกิน 25 (ความดังเหมาะสมกับเปดัล Hi-Hat)
-            // - isPedalReleased ต้องเป็น true (ป้องกันการเบิ้ลค้างตอนหน้าสัมผัสเด้ง)
-            // - หน่วงเวลา 90ms (รองรับสปีดความเร็วสูงระดับ 200 BPM ได้สบาย และช่วยตัดหางเสียงกระเด้ง)
-            if (peak > 25 && isPedalReleased && (now - lastStompTime > 90)) { 
-                triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
+            // หน่วงเวลา 90ms รองรับ 200 BPM และเช็ค Peak ความดัง
+            if (peak > 25 && isDrumReleased && (now - lastStompTime > 90)) { 
+                triggerPad('pad-kick'); 
                 lastStompTime = now;
-                isPedalReleased = false; // ล็อกทันที รอจนกว่าจะยกเท้าปล่อย
+                isDrumReleased = false;
             }
 
-            requestAnimationFrame(detectMicPedalStomp);
+            requestAnimationFrame(detectDrumPedalLoop);
+        }
+
+        // --- โหมดที่ 2: คีย์บอร์ด (Sustain Pedal) - เน้นตรวจจับการเปลี่ยนสถานะวงจรไฟฟ้า (Step Change) ---
+        let lastAverage = 128;
+        function detectKeyboardPedalLoop() {
+            if (!isListeningMic || currentPedalMode !== 'keyboard') return;
+            
+            const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
+            micAnalyser.getByteTimeDomainData(dataArray);
+
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            let currentAverage = sum / dataArray.length;
+            let diff = Math.abs(currentAverage - lastAverage);
+            lastAverage = currentAverage;
+
+            const now = Date.now();
+            
+            // ตรวจจับเมื่อมีการเหยียบหรือปล่อยสวิตช์คีย์บอร์ด (ค่าเฉลี่ยกระโดด)
+            if (diff > 2.0 && (now - lastStompTime > 150)) {
+                triggerPad('pad-kick');
+                lastStompTime = now;
+            }
+
+            requestAnimationFrame(detectKeyboardPedalLoop);
         }
         const DB_NAME = 'PrakaipadDB_v4';
         const STORE_NAME = 'audioBuffers';
