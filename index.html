@@ -128,7 +128,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.06 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[10px] text-gray-400">Version 2026.09.28.17.23 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -187,53 +187,32 @@
         let micAnalyser = null;
         let isListeningMic = false;
         let lastStompTime = 0;
-        const debounceTime = 120; 
-        let lastAverage = 128;    
-        let micStream = null;
-        let micAnalyser = null;
-        let isListeningMic = false;
 
-        // ฟังก์ชันเชื่อมต่อไมค์แบบป้องกัน Error ครบถ้วน
+        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์ (ผูกกับปุ่มบนหน้าเว็บของคุณได้เลย)
         async function connectMicPedal() {
-            if (isListeningMic) return;
-
-            // ตรวจสอบและสร้าง AudioContext ทันทีถ้ายังไม่มี
-            if (!window.audioCtx) {
-                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                window.audioCtx = new AudioContextClass();
-            }
-            if (window.audioCtx.state === 'suspended') {
-                window.audioCtx.resume();
-            }
-
+            initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
             try {
                 micStream = await navigator.mediaDevices.getUserMedia({ 
                     audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
                     video: false 
                 });
                 
-                const source = window.audioCtx.createMediaStreamSource(micStream);
-                micAnalyser = window.audioCtx.createAnalyser();
+                const source = audioCtx.createMediaStreamSource(micStream);
+                micAnalyser = audioCtx.createAnalyser();
                 micAnalyser.fftSize = 256;
                 source.connect(micAnalyser);
                 
                 isListeningMic = true;
+                console.log('Pedal Mic: Active & Listening');
 
-                // เปลี่ยนสถานะปุ่มเมื่อเชื่อมต่อสำเร็จ
-                const btn = document.getElementById('mic-connect-btn');
-                const btnText = document.getElementById('mic-btn-text');
-                if (btn && btnText) {
-                    btn.className = "flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-300 shadow-lg cursor-default";
-                    btnText.innerHTML = '<span class="text-emerald-400 font-semibold">Pedal Connected</span>';
-                }
-
+                // เริ่มรันลูปตรวจจับสัญญาณ
                 detectMicPedalStomp();
             } catch (err) {
                 alert('Cannot access microphone: ' + err.message);
             }
         }
 
-        // ลูปตรวจจับสัญญาณ
+        // ลูปตรวจสอบค่าพลังงานเสียงจากช่องไมค์แบบเรียลไทม์
         function detectMicPedalStomp() {
             if (!isListeningMic || !micAnalyser) return;
             
@@ -241,27 +220,15 @@
             micAnalyser.getByteTimeDomainData(dataArray);
 
             let peak = 0;
-            let sum = 0;
-
             for (let i = 0; i < dataArray.length; i++) {
-                let sample = dataArray[i];
-                let absSample = Math.abs(sample - 128);
-                if (absSample > peak) peak = absSample;
-                sum += sample;
+                let sample = Math.abs(dataArray[i] - 128);
+                if (sample > peak) peak = sample;
             }
-            
-            let currentAverage = sum / dataArray.length;
-            let diff = Math.abs(currentAverage - lastAverage);
-            lastAverage = currentAverage; 
 
+            // ค่า Threshold (25) และ Debounce (120ms) เพื่อกันสัญญาณกวน
             const now = Date.now();
-
-            let isTriggered = (peak > 15) || (diff > 1.5);
-
-            if (isTriggered && (now - lastStompTime > debounceTime)) { 
-                if (typeof triggerPad === 'function') {
-                    triggerPad('pad-kick'); 
-                }
+            if (peak > 25 && (now - lastStompTime > 120)) { 
+                triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
                 lastStompTime = now;
             }
 
