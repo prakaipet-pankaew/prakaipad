@@ -34,11 +34,9 @@
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
-        /* กำหนดพื้นหลังเริ่มต้นของแป้น */
         .drum-pad {
             position: absolute;
             border-radius: 1.5rem;
-            /* เปลี่ยนพื้นหลังเริ่มต้นตรงนี้ให้เข้ากับธีม */
             background: linear-gradient(145deg, #1e2235, #151826);
             border: 2px solid rgba(255, 255, 255, 0.1);
             box-shadow: 5px 5px 15px #0a0b11, -5px -5px 15px #1c2031;
@@ -51,12 +49,6 @@
             z-index: 5;
         }
 
-        #pad-kick {
-            width: 110px;
-            height: 110px;
-            /* เอา border-radius: 50%; ออก เพื่อให้เป็นสี่เหลี่ยมโค้งมนเหมือนปุ่มอื่น */
-        }
-
         .drum-pad::before {
             content: '';
             position: absolute;
@@ -67,7 +59,6 @@
             border-radius: inherit;
         }
 
-        /* --- กำหนดสีพื้นหลังและขอบของแต่ละธีมสี --- */
         .glow-amber { background: linear-gradient(145deg, #451a03, #291102); border-color: rgb(var(--pad-amber)); }
         .glow-pink { background: linear-gradient(145deg, #500724, #300414); border-color: rgb(var(--pad-pink)); }
         .glow-red { background: linear-gradient(145deg, #450a0a, #2b0404); border-color: rgb(var(--pad-red)); }
@@ -80,12 +71,11 @@
         .glow-purple { background: linear-gradient(145deg, #3b0764, #23043d); border-color: rgb(var(--pad-purple)); }
         .glow-green { background: linear-gradient(145deg, #064e3b, #032b20); border-color: rgb(var(--pad-green)); }
 
-        /* เอฟเฟกต์ตอนกดแป้น (Active) ให้สว่างขึ้น */
         .drum-pad.active { 
             transform: scale(0.92); 
             filter: brightness(1.3);
-            z-index: 10; 
         }
+
         .edit-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -96,71 +86,48 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 3px;
+            gap: 2px;
             z-index: 20;
             padding: 4px;
         }
 
-        .edit-mode-active .edit-overlay {
-            display: flex;
-        }
-        
-                /* แสดงไอคอนลากเฉพาะตอนเปิด Edit Mode */
-        .edit-mode-active .edit-drag-icon {
-            display: block !important;
-        }
+        .edit-mode-active .edit-overlay { display: flex; }
+        .edit-mode-active .edit-drag-icon { display: block !important; }
 
-        /* ตอนเปิด Edit Mode ไม่ต้องให้เคอร์เซอร์บนแป้นกลองเป็นรูปย้าย (ให้เปลี่ยนเฉพาะตอนชี้ปุ่มย้าย) */
         .edit-mode-active .drum-pad {
             border: 2px dashed #4b5563;
             cursor: default; 
         }
 
-        /* สัญลักษณ์ลูกศรตรงมุมสำหรับลากขยายขนาด */
-        /* --- ตัวควบคุมปรับขนาดแยกอิสระ (ขวา = ความกว้าง, ล่าง = ความสูง) --- */
         .resize-width {
             position: absolute;
-            right: -4px;
-            top: 50%;
+            right: -4px; top: 50%;
             transform: translateY(-50%);
-            width: 10px;
-            height: 40%;
+            width: 10px; height: 40%;
             cursor: ew-resize;
             display: none;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            z-index: 30;
-            touch-action: none;
+            align-items: center; justify-content: center;
+            color: #9ca3af; z-index: 30; touch-action: none;
         }
         .resize-width:hover { color: #ffffff; }
 
         .resize-height {
             position: absolute;
-            bottom: -4px;
-            left: 50%;
+            bottom: -4px; left: 50%;
             transform: translateX(-50%);
-            width: 40%;
-            height: 10px;
+            width: 40%; height: 10px;
             cursor: ns-resize;
             display: none;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            z-index: 30;
-            touch-action: none;
+            align-items: center; justify-content: center;
+            color: #9ca3af; z-index: 30; touch-action: none;
         }
         .resize-height:hover { color: #ffffff; }
 
-        /* แสดงเฉพาะตอนเปิดโหมด Edit */
         .edit-mode-active .resize-width,
-        .edit-mode-active .resize-height {
-            display: flex !important;
-        }
-        
-        #message-box, #key-prompt {
+        .edit-mode-active .resize-height { display: flex !important; }
+
+        #message-box, #key-prompt, #preset-modal {
             transition: opacity 0.3s, transform 0.3s;
-            pointer-events: none;
         }
 
         .keycap {
@@ -172,7 +139,6 @@
             font-weight: bold;
             color: #d1d5db;
         }
-        /* --- กำหนดสีของปุ่มคีย์ลัด (keycap) ให้เข้ากับสีของแป้นกลอง --- */
         .glow-amber .keycap  { background: #78350f; color: #fef3c7; border-bottom-color: #451a03; }
         .glow-pink .keycap   { background: #831843; color: #fce7f3; border-bottom-color: #500724; }
         .glow-red .keycap    { background: #7f1d1d; color: #fee2e2; border-bottom-color: #450a0a; }
@@ -188,29 +154,43 @@
 </head>
 <body class="w-screen h-screen flex flex-col bg-[#0f111a]">
 
-    <header class="w-full bg-[#151826] border-b border-gray-800 p-3 flex justify-between items-center shadow-md z-30 shrink-0">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-                <i class="fa-solid fa-fire text-white"></i>
+    <header class="w-full bg-[#151826] border-b border-gray-800 p-2 sm:p-3 flex justify-between items-center shadow-md z-30 shrink-0">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-cyan-400 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-gem text-white text-sm sm:text-base animate-pulse"></i>
             </div>
             <div>
-                <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[10px] text-gray-400">Version 2026.11.04.18.30 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <h1 class="font-orbitron font-bold text-base sm:text-xl text-white tracking-wide">Prakaipad</h1>
+                <p class="text-[9px] sm:text-[10px] text-gray-400">Version 2026.11.04.21.03 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
-        <div class="flex items-center gap-2 sm:gap-4">
-            <button id="add-pad-btn" class="hidden items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg">
+        <div class="flex items-center gap-1.5 sm:gap-3">
+            <button id="stop-all-btn" class="flex items-center gap-1.5 bg-red-600 hover:bg-red-500 border border-red-500 text-xs px-2.5 sm:px-3 py-1.5 rounded-lg transition text-white shadow-lg font-bold active:scale-95" title="Stop All Sounds Immediately">
+                <i class="fa-solid fa-volume-xmark text-sm"></i>
+                <span class="hidden sm:inline">STOP ALL</span>
+            </button>
+
+            <button id="save-preset-btn" class="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-600 border border-emerald-600 text-xs px-2.5 sm:px-3 py-1.5 rounded-lg transition text-white shadow-lg" title="Save Preset">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span class="hidden sm:inline">Save Preset</span>
+            </button>
+            <button id="load-preset-btn" class="flex items-center gap-1.5 bg-teal-700 hover:bg-teal-600 border border-teal-600 text-xs px-2.5 sm:px-3 py-1.5 rounded-lg transition text-white shadow-lg" title="Load Preset">
+                <i class="fa-solid fa-folder-open"></i>
+                <span class="hidden sm:inline">Load Preset</span>
+            </button>
+            
+            <button id="add-pad-btn" class="hidden items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-xs px-2.5 sm:px-3 py-1.5 rounded-lg transition text-white shadow-lg">
                 <i class="fa-solid fa-plus"></i>
                 <span class="hidden sm:inline">Add Pad</span>
             </button>
-            <button id="reset-default-btn" class="hidden items-center gap-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-200 shadow-lg">
+            <button id="reset-default-btn" class="hidden items-center gap-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 text-xs px-2.5 sm:px-3 py-1.5 rounded-lg transition text-gray-200 shadow-lg">
                 <i class="fa-solid fa-rotate-right"></i>
-                <span class="hidden sm:inline">Reset Default</span>
+                <span class="hidden sm:inline">Reset</span>
             </button>
-            <button id="edit-toggle" class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-gray-200 shadow-lg">
+            <button id="edit-toggle" class="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs px-3 py-1.5 rounded-lg transition text-gray-200 shadow-lg">
                 <i class="fa-solid fa-arrows-up-down-left-right"></i>
-                <span class="hidden sm:inline">Edit Layout & Keys</span>
+                <span class="hidden sm:inline">Edit Layout</span>
             </button>
         </div>
     </header>
@@ -221,14 +201,24 @@
 
     <input type="file" id="audio-upload" accept="audio/wav, audio/mp3, audio/mpeg, audio/ogg" class="hidden">
 
-    <div id="message-box" class="fixed top-20 left-1/2 transform -translate-x-1/2 opacity-0 -translate-y-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-2xl border border-gray-700 z-50 flex items-center gap-3">
+    <div id="message-box" class="fixed top-20 left-1/2 transform -translate-x-1/2 opacity-0 -translate-y-4 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-2xl border border-gray-700 z-50 flex items-center gap-3 pointer-events-none">
         <i class="fa-solid fa-bell text-indigo-400"></i>
         <span id="message-text" class="text-sm font-medium">Message</span>
     </div>
 
-    <div id="key-prompt" class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] opacity-0" style="display: none;">
+    <div id="preset-modal" class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] opacity-0 pointer-events-none" style="display: none;">
+        <div class="bg-gray-800 p-6 rounded-2xl border border-gray-700 shadow-2xl text-center w-80 max-w-full">
+            <h2 class="text-lg font-bold text-white mb-3 font-orbitron flex items-center justify-center gap-2">
+                <i class="fa-solid fa-layer-group text-teal-400"></i> Saved Presets
+            </h2>
+            <div id="preset-list" class="flex flex-col gap-2 max-h-60 overflow-y-auto my-3 pr-1"></div>
+            <button id="close-preset-modal" class="w-full mt-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs py-2 rounded-lg transition">Close</button>
+        </div>
+    </div>
+
+    <div id="key-prompt" class="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-[100] opacity-0 pointer-events-none" style="display: none;">
         <div class="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-2xl text-center max-w-sm">
-            <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse pointer-events-none">
                 <i class="fa-regular fa-keyboard text-2xl text-white"></i>
             </div>
             <h2 class="text-xl font-bold text-white mb-2 font-orbitron">Assign New Key</h2>
@@ -245,7 +235,7 @@
         const customBuffers = {};
         const activeSources = {};
         const workspace = document.getElementById('workspace');
-// --- [เพิ่มส่วนนี้] ตัวแปรและฟังก์ชันสำหรับดักจับสัญญาณ Pedal ผ่าน Mic ---
+
         const DB_NAME = 'PrakaipadDB_v4';
         const STORE_NAME = 'audioBuffers';
         let db = null;
@@ -267,12 +257,12 @@
             });
         }
 
-        function saveAudioToDB(padId, blob) {
+        function saveAudioToDB(key, blob) {
             if (!db) return;
             try {
                 const transaction = db.transaction([STORE_NAME], 'readwrite');
                 const store = transaction.objectStore(STORE_NAME);
-                store.put(blob, padId);
+                store.put(blob, key);
             } catch (err) {
                 console.error("Error saving audio to IndexedDB", err);
             }
@@ -303,28 +293,29 @@
             });
         }
 
-        function deleteAudioFromDB(padId) {
+        function deleteAudioFromDB(key) {
             if (!db) return;
             try {
                 const transaction = db.transaction([STORE_NAME], 'readwrite');
                 const store = transaction.objectStore(STORE_NAME);
-                store.delete(padId);
+                store.delete(key);
             } catch (err) {
                 console.error("Error deleting audio from IndexedDB", err);
             }
         }
 
+        // ตั้งค่า allowsOverlap: false เป็นค่าเริ่มต้น (ปิด Polyphony) และ zIndex: 5
         const defaultPadsConfig = [
-            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', defaultSynth: 'playCrash', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', defaultSynth: 'playRide', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', defaultSynth: 'playTom1', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', defaultSynth: 'playTom2', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', defaultSynth: 'playTom3', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', defaultSynth: 'playHiHatClose', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', defaultSynth: 'playHiHatOpen', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', defaultSynth: 'playSnareRim', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', defaultSynth: 'playSnareCenter', volume: 1.0, size: 110, x: 0, y: 0 },
-            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', defaultSynth: 'playKick', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', defaultSynth: 'playCrash', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', defaultSynth: 'playRide', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', defaultSynth: 'playTom1', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', defaultSynth: 'playTom2', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', defaultSynth: 'playTom3', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', defaultSynth: 'playHiHatClose', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', defaultSynth: 'playHiHatOpen', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', defaultSynth: 'playSnareRim', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', defaultSynth: 'playSnareCenter', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', defaultSynth: 'playKick', volume: 1.0, width: 140, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
         ];
 
         let drumPadsConfig = [];
@@ -342,6 +333,8 @@
                         if (p.volume === undefined) p.volume = 1.0;
                         if (p.width === undefined) p.width = p.size || 110;
                         if (p.height === undefined) p.height = p.size || 110;
+                        if (p.allowsOverlap === undefined) p.allowsOverlap = false; // ตั้งค่าเริ่มต้นเป็นปิด
+                        if (p.zIndex === undefined) p.zIndex = 5;
                         if (p.id.startsWith('pad-custom-')) {
                             const num = parseInt(p.id.replace('pad-custom-', ''));
                             if (!isNaN(num) && num > customPadCount) customPadCount = num;
@@ -377,19 +370,14 @@
 
                 drumPadsConfig.forEach(pad => {
                     const pos = layoutMap[pad.id] || {x: 0.5, y: 0.5};
-                    const padSize = pad.id === 'pad-kick' ? 140 : 110;
-                    let pxX = (pos.x * w) - (padSize / 2);
-                    let pxY = (pos.y * h) - (padSize / 2);
-                    pad.x = Math.max(0, Math.min(pxX, w - padSize));
-                    pad.y = Math.max(0, Math.min(pxY, h - padSize));
+                    const wPad = pad.width || 110;
+                    const hPad = pad.height || 110;
+                    let pxX = (pos.x * w) - (wPad / 2);
+                    let pxY = (pos.y * h) - (hPad / 2);
+                    pad.x = Math.max(0, Math.min(pxX, w - wPad));
+                    pad.y = Math.max(0, Math.min(pxY, h - hPad));
                 });
                 saveConfigToLocalStorage();
-            } else {
-                drumPadsConfig.forEach(pad => {
-                    const padSize = pad.id === 'pad-kick' ? 140 : 110;
-                    if (pad.x > w - padSize) pad.x = Math.max(0, w - padSize);
-                    if (pad.y > h - padSize) pad.y = Math.max(0, h - padSize);
-                });
             }
         }
 
@@ -407,8 +395,8 @@
             padEl.id = pad.id;
             padEl.style.left = `${pad.x}px`;
             padEl.style.top = `${pad.y}px`;
-
-            // กำหนดความกว้างและความสูงแยกกัน (ถ้ายังไม่มีให้ใช้ค่าเริ่มต้น 110px)
+            padEl.style.zIndex = pad.zIndex !== undefined ? pad.zIndex : 5;
+            
             const currentWidth = pad.width !== undefined ? pad.width : 110;
             const currentHeight = pad.height !== undefined ? pad.height : 110;
             padEl.style.width = `${currentWidth}px`;
@@ -417,35 +405,45 @@
             const displayKey = pad.key === ' ' ? 'SPACE' : pad.key;
             const displayName = pad.name;
             const currentVol = pad.volume !== undefined ? pad.volume : 1.0;
+            const isOverlapActive = pad.allowsOverlap !== undefined ? pad.allowsOverlap : false;
 
             padEl.innerHTML = `
-                <!-- ปุ่มเฉพาะสำหรับลากย้าย -->
                 <div class="drag-handle absolute -top-[15px] left-0 text-gray-400 hover:text-white cursor-move hidden edit-drag-icon p-1 z-30">
                     <i class="fa-solid fa-arrows-up-down-left-right text-xs"></i>
                 </div>
 
-                <!-- [ใหม่] ตัวปรับความกว้างด้านขวา -->
                 <div class="resize-width" title="Drag to resize width">
                     <i class="fa-solid fa-grip-vertical text-[10px]"></i>
                 </div>
-
-                <!-- [ใหม่] ตัวปรับความสูงด้านล่าง -->
                 <div class="resize-height" title="Drag to resize height">
                     <i class="fa-solid fa-grip-lines text-[10px]"></i>
                 </div>
 
-                <!-- ไม่มีไอคอนรูปภาพแล้ว แสดงเฉพาะชื่อและคีย์ -->
                 <span class="font-orbitron font-bold text-xs text-gray-200 tracking-wide text-center pointer-events-none mt-2">${displayName}</span>
                 <div class="mt-1 keycap pointer-events-none key-display">${displayKey || '-'}</div>
                 
                 <div class="edit-overlay">
-                    <!-- ส่วนปรับความดัง Vol -->
                     <div class="flex items-center justify-between w-[92%] bg-gray-900/90 px-1.5 py-0.5 rounded text-[9px] text-gray-300">
                         <span class="text-[8px] font-semibold">Vol</span>
                         <input type="range" min="0" max="1" step="0.05" value="${currentVol}" class="vol-slider w-14 accent-indigo-500 cursor-pointer">
                     </div>
 
-                    <!-- ส่วนเลือกสี Color -->
+                    <!-- ปุ่มเปิด/ปิด Polyphony (ค่าเริ่มต้นเป็น OFF) -->
+                    <div class="flex items-center justify-between w-[92%] bg-gray-900/90 px-1.5 py-0.5 rounded text-[9px] text-gray-300">
+                        <span class="text-[8px] font-semibold">Polyphony</span>
+                        <button class="overlap-toggle-btn px-1.5 py-0.5 rounded text-[8px] font-bold transition ${isOverlapActive ? 'bg-emerald-600 text-white' : 'bg-gray-700 text-gray-400'}" title="เปิด/ปิดการกดซ้ำแล้วเล่นเสียงซ้อนกัน">
+                            ${isOverlapActive ? 'ON' : 'OFF'}
+                        </button>
+                    </div>
+
+                    <!-- [ใหม่] ปุ่มปรับ Layer สูงขึ้น +1 -->
+                    <div class="flex items-center justify-between">
+                        <span class="text-[8px] font-semibold"> <span class="layer-val">${padEl.style.zIndex}</span>)</span>
+                        <button class="layer-up-btn px-2 py-0.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[8px] font-bold transition">
+                            Up Layer
+                        </button>
+                    </div>
+
                     <div class="flex items-center justify-between w-[92%] bg-gray-900/90 px-1.5 py-0.5 rounded text-[9px] text-gray-300">
                         <span class="text-[8px] font-semibold">Color</span>
                         <select class="color-select bg-gray-800 text-white rounded px-0.5 py-0.5 text-[8px] cursor-pointer outline-none">
@@ -463,8 +461,6 @@
                         </select>
                     </div>
 
-
-                    <!-- รวมปุ่มฟังก์ชันเป็นไอคอน 4 ปุ่มเรียงแถวนวนขนาน -->
                     <div class="flex items-center justify-center gap-1 w-[92%] mt-0.5">
                         <button title="Rename" class="rename-btn bg-yellow-600 hover:bg-yellow-500 text-white w-6 h-6 rounded flex justify-center items-center text-[10px] transition shrink-0">
                             <i class="fa-solid fa-pen"></i>
@@ -490,7 +486,7 @@
 
             workspace.appendChild(padEl);
             setupDraggable(padEl, pad);
-            setupResizableIndependent(padEl, pad); // [เปลี่ยนมาเรียกใช้ฟังก์ชันแยกอิสระ]
+            setupResizableIndependent(padEl, pad);
             setupEditButtonsForPad(padEl, pad);
         }
 
@@ -503,7 +499,6 @@
 
             const onPointerMove = (e) => {
                 if (!isDragging) return;
-                
                 const dx = e.clientX - startX;
                 const dy = e.clientY - startY;
                 
@@ -528,12 +523,10 @@
                 if (!isDragging) return;
                 isDragging = false;
                 try { dragHandle.releasePointerCapture(e.pointerId); } catch(err) {}
-                el.style.zIndex = 5;
+                el.style.zIndex = padConfig.zIndex || 5;
                 saveConfigToLocalStorage();
-                
                 window.removeEventListener('pointermove', onPointerMove);
                 window.removeEventListener('pointerup', onPointerUp);
-                window.removeEventListener('pointercancel', onPointerUp);
             };
 
             dragHandle.addEventListener('pointerdown', (e) => {
@@ -547,21 +540,17 @@
                 startY = e.clientY;
                 initialLeft = parseFloat(el.style.left) || 0;
                 initialTop = parseFloat(el.style.top) || 0;
-                
                 el.style.zIndex = 100;
 
                 window.addEventListener('pointermove', onPointerMove);
                 window.addEventListener('pointerup', onPointerUp);
-                window.addEventListener('pointercancel', onPointerUp);
             });
         }
 
         function setupResizableIndependent(el, padConfig) {
             const resizerWidth = el.querySelector('.resize-width');
             const resizerHeight = el.querySelector('.resize-height');
-            const ws = document.getElementById('workspace');
 
-            // 1. จัดการลากปรับความกว้าง (ทางขวา)
             if (resizerWidth) {
                 let isResizingW = false;
                 let startX, startW;
@@ -569,8 +558,7 @@
                 const onMoveW = (e) => {
                     if (!isResizingW) return;
                     const dx = e.clientX - startX;
-                    // เปิดกว้างได้สูงสุดเท่ากับพื้นที่หน้าจอที่เหลือ (ไม่มีขีดจำกัดตายตัว)
-                    const maxW = ws.clientWidth - el.offsetLeft;
+                    const maxW = workspace.clientWidth - el.offsetLeft;
                     let newW = Math.max(50, startW + dx);
                     newW = Math.min(newW, maxW);
 
@@ -599,7 +587,6 @@
                 });
             }
 
-            // 2. จัดการลากปรับความสูง (ทางล่าง)
             if (resizerHeight) {
                 let isResizingH = false;
                 let startY, startH;
@@ -607,8 +594,7 @@
                 const onMoveH = (e) => {
                     if (!isResizingH) return;
                     const dy = e.clientY - startY;
-                    // สูงได้สูงสุดเท่ากับพื้นที่หน้าจอแนวตั้งที่เหลือ (ไม่มีขีดจำกัดตายตัว)
-                    const maxH = ws.clientHeight - el.offsetTop;
+                    const maxH = workspace.clientHeight - el.offsetTop;
                     let newH = Math.max(50, startH + dy);
                     newH = Math.min(newH, maxH);
 
@@ -641,16 +627,47 @@
         let currentUploadPadId = null;
 
         function setupEditButtonsForPad(padEl, padConfig) {
+            // จัดการปุ่ม Layer +1
+            const layerUpBtn = padEl.querySelector('.layer-up-btn');
+            const layerValSpan = padEl.querySelector('.layer-val');
+            if (layerUpBtn) {
+                layerUpBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                layerUpBtn.addEventListener('click', () => {
+                    if (padConfig.zIndex === undefined) padConfig.zIndex = 5;
+                    padConfig.zIndex += 1;
+                    padEl.style.zIndex = padConfig.zIndex;
+                    if (layerValSpan) layerValSpan.innerText = padConfig.zIndex;
+                    saveConfigToLocalStorage();
+                    showMessage(`ปรับ Layer ของ "${padConfig.name}" เป็น ${padConfig.zIndex}`);
+                });
+            }
+
+            // จัดการสลับโหมด Polyphony
+            const overlapBtn = padEl.querySelector('.overlap-toggle-btn');
+            if (overlapBtn) {
+                overlapBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                overlapBtn.addEventListener('click', () => {
+                    padConfig.allowsOverlap = !padConfig.allowsOverlap;
+                    saveConfigToLocalStorage();
+                    if (padConfig.allowsOverlap) {
+                        overlapBtn.innerText = 'ON';
+                        overlapBtn.className = 'overlap-toggle-btn px-1.5 py-0.5 rounded text-[8px] font-bold transition bg-emerald-600 text-white';
+                        showMessage(`แป้น "${padConfig.name}": เปิดโหมด Polyphony (เสียงซ้อนกัน)`);
+                    } else {
+                        overlapBtn.innerText = 'OFF';
+                        overlapBtn.className = 'overlap-toggle-btn px-1.5 py-0.5 rounded text-[8px] font-bold transition bg-gray-700 text-gray-400';
+                        showMessage(`แป้น "${padConfig.name}": ปิดโหมด Polyphony (ตัดเสียงเดิมเมื่อกดซ้ำ)`);
+                    }
+                });
+            }
+
             const colorSelect = padEl.querySelector('.color-select');
             if (colorSelect) {
                 colorSelect.addEventListener('pointerdown', (e) => e.stopPropagation());
                 colorSelect.addEventListener('change', (e) => {
                     const newColor = e.target.value;
-                    // ลบคลาสสี glow ทั้งหมดออกก่อน
                     padEl.classList.remove('glow-amber', 'glow-pink', 'glow-red', 'glow-cyan', 'glow-teal', 'glow-blue', 'glow-indigo', 'glow-violet', 'glow-yellow', 'glow-purple', 'glow-green');
-                    // ใส่คลาสสีใหม่เข้าไป
                     padEl.classList.add(newColor);
-                    
                     padConfig.colorClass = newColor;
                     saveConfigToLocalStorage();
                 });
@@ -670,7 +687,6 @@
                 });
             }
 
-
             const volSlider = padEl.querySelector('.vol-slider');
             volSlider.addEventListener('pointerdown', (e) => e.stopPropagation());
             volSlider.addEventListener('input', (e) => {
@@ -685,6 +701,7 @@
                 document.getElementById('prompt-pad-name').innerText = padConfig.name;
                 const prompt = document.getElementById('key-prompt');
                 prompt.style.display = 'flex';
+                prompt.classList.remove('pointer-events-none');
                 setTimeout(() => prompt.style.opacity = '1', 10);
             });
 
@@ -724,30 +741,30 @@
             const colors = ['glow-green', 'glow-teal', 'glow-cyan', 'glow-blue', 'glow-pink', 'glow-amber'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             
-            const padSize = 110;
-            let newX = (workspace.clientWidth / 2) - (padSize / 2);
-            let newY = (workspace.clientHeight / 2) - (padSize / 2);
+            const wPad = 110;
+            const hPad = 110;
+            let newX = (workspace.clientWidth / 2) - (wPad / 2);
+            let newY = (workspace.clientHeight / 2) - (hPad / 2);
 
             const newPad = {
                 id: newId,
                 name: `PAD ${customPadCount + 10}`,
                 key: '',
                 colorClass: randomColor,
-                icon: 'fa-square',
-                colorHex: 'text-gray-300',
                 defaultSynth: 'playTom1',
                 volume: 1.0,
-                width: 110,
-                height: 110,
-                size: 110, // กำหนดขนาดเริ่มต้น
+                width: wPad,
+                height: hPad,
                 x: newX,
-                y: newY
+                y: newY,
+                allowsOverlap: false,
+                zIndex: 5
             };
 
             drumPadsConfig.push(newPad);
             saveConfigToLocalStorage();
             createPadElement(newPad);
-            showMessage("New pad added! Drag it anywhere.");
+            showMessage("New pad added!");
         });
 
         window.addEventListener('keydown', (e) => {
@@ -787,6 +804,7 @@
         function closeKeyPrompt() {
             const prompt = document.getElementById('key-prompt');
             prompt.style.opacity = '0';
+            prompt.classList.add('pointer-events-none');
             setTimeout(() => {
                 prompt.style.display = 'none';
                 padAwaitingKey = null;
@@ -827,20 +845,61 @@
             }
         }
 
+        function stopAllSounds() {
+            for (const id in activeSources) {
+                stopActiveSource(id);
+            }
+            if (audioCtx) {
+                try {
+                    audioCtx.suspend().then(() => {
+                        audioCtx.resume();
+                    });
+                } catch (e) {}
+            }
+            showMessage("หยุดเสียงทั้งหมดแล้ว!");
+        }
+
+        document.getElementById('stop-all-btn').addEventListener('click', stopAllSounds);
+
         function stopActiveSource(id) {
             if (activeSources[id]) {
-                try {
-                    activeSources[id].stop();
-                    activeSources[id].disconnect();
-                } catch (e) {}
-                activeSources[id] = null;
+                const sources = Array.isArray(activeSources[id]) ? activeSources[id] : [activeSources[id]];
+                sources.forEach(src => {
+                    try {
+                        if (Array.isArray(src)) {
+                            src.forEach(s => { try { s.stop(); s.disconnect(); } catch (e) {} });
+                        } else if (src && typeof src.stop === 'function') {
+                            src.stop();
+                            src.disconnect();
+                        }
+                    } catch (e) {}
+                });
+                activeSources[id] = [];
+            }
+        }
+
+        function registerActiveSource(id, sourceNode, allowsOverlap) {
+            if (!activeSources[id]) {
+                activeSources[id] = [];
+            }
+            if (!allowsOverlap) {
+                stopActiveSource(id);
+                activeSources[id] = [sourceNode];
+            } else {
+                activeSources[id].push(sourceNode);
             }
         }
 
         function triggerPad(id) {
             initAudio();
-            stopActiveSource(id);
             
+            const padConf = drumPadsConfig.find(p => p.id === id);
+            const allowsOverlap = padConf && padConf.allowsOverlap !== undefined ? padConf.allowsOverlap : false;
+            
+            if (!allowsOverlap) {
+                stopActiveSource(id);
+            }
+
             const padEl = document.getElementById(id);
             if (padEl) {
                 padEl.classList.remove('active');
@@ -849,21 +908,20 @@
                 setTimeout(() => padEl.classList.remove('active'), 100);
             }
 
-            const padConf = drumPadsConfig.find(p => p.id === id);
             const padVol = padConf && padConf.volume !== undefined ? padConf.volume : 1.0;
 
             if (customBuffers[id]) {
-                playCustomBuffer(id, customBuffers[id], padVol);
+                playCustomBuffer(id, customBuffers[id], padVol, allowsOverlap);
             } else {
                 if (padConf && padConf.defaultSynth && window[padConf.defaultSynth]) {
-                    window[padConf.defaultSynth](id, padVol);
+                    window[padConf.defaultSynth](id, padVol, allowsOverlap);
                 } else {
-                    playTom1(id, padVol);
+                    playTom1(id, padVol, allowsOverlap);
                 }
             }
         }
 
-        function playCustomBuffer(id, buffer, volume = 1.0) {
+        function playCustomBuffer(id, buffer, volume = 1.0, allowsOverlap = false) {
             const source = audioCtx.createBufferSource();
             const gainNode = audioCtx.createGain();
             source.buffer = buffer;
@@ -872,15 +930,10 @@
             gainNode.connect(audioCtx.destination);
             source.start(0);
 
-            activeSources[id] = source;
-            source.onended = () => {
-                if (activeSources[id] === source) {
-                    activeSources[id] = null;
-                }
-            };
+            registerActiveSource(id, source, allowsOverlap);
         }
 
-        function playKick(id, volume = 1.0) {
+        function playKick(id, volume = 1.0, allowsOverlap = false) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain);
@@ -894,10 +947,10 @@
             
             osc.start(now);
             osc.stop(now + 0.5);
-            activeSources[id] = osc;
+            registerActiveSource(id, osc, allowsOverlap);
         }
 
-        function playSnareCenter(id, volume = 1.0) {
+        function playSnareCenter(id, volume = 1.0, allowsOverlap = false) {
             const osc = audioCtx.createOscillator();
             const oscGain = audioCtx.createGain();
             osc.type = 'triangle';
@@ -933,10 +986,10 @@
             osc.start(now);
             noise.start(now);
             osc.stop(now + 0.2);
-            activeSources[id] = noise;
+            registerActiveSource(id, noise, allowsOverlap);
         }
 
-        function playSnareRim(id, volume = 1.0) {
+        function playSnareRim(id, volume = 1.0, allowsOverlap = false) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'square';
@@ -951,15 +1004,15 @@
             
             osc.start(now);
             osc.stop(now + 0.1);
-            activeSources[id] = osc;
+            registerActiveSource(id, osc, allowsOverlap);
         }
 
-        function playHiHatClose(id, volume = 1.0) { createCymbalSound(id, 0.1, 5000, 0.5 * volume); }
-        function playHiHatOpen(id, volume = 1.0) { createCymbalSound(id, 0.4, 4000, 0.4 * volume); }
-        function playCrash(id, volume = 1.0) { createCymbalSound(id, 1.5, 2000, 0.8 * volume); }
-        function playRide(id, volume = 1.0) { createCymbalSound(id, 1.2, 6000, 0.6 * volume, true); }
+        function playHiHatClose(id, volume = 1.0, allowsOverlap = false) { createCymbalSound(id, 0.1, 5000, 0.5 * volume, false, allowsOverlap); }
+        function playHiHatOpen(id, volume = 1.0, allowsOverlap = false) { createCymbalSound(id, 0.4, 4000, 0.4 * volume, false, allowsOverlap); }
+        function playCrash(id, volume = 1.0, allowsOverlap = false) { createCymbalSound(id, 1.5, 2000, 0.8 * volume, false, allowsOverlap); }
+        function playRide(id, volume = 1.0, allowsOverlap = false) { createCymbalSound(id, 1.2, 6000, 0.6 * volume, true, allowsOverlap); }
 
-        function createCymbalSound(id, duration, freq, volume, isRide = false) {
+        function createCymbalSound(id, duration, freq, volume, isRide = false, allowsOverlap = false) {
             const ratios = isRide ? [1, 1.2, 1.6, 2.3, 3.1] : [1, 1.48, 1.93, 2.54, 2.61, 3.89];
             const gain = audioCtx.createGain();
             const bandpass = audioCtx.createBiquadFilter();
@@ -975,22 +1028,24 @@
             gain.gain.setValueAtTime(volume, now);
             gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
-            ratios.forEach((ratio, idx) => {
+            const oscNodes = [];
+            ratios.forEach((ratio) => {
                 const osc = audioCtx.createOscillator();
                 osc.type = 'square';
                 osc.frequency.value = 400 * ratio;
                 osc.connect(gain);
                 osc.start(now);
                 osc.stop(now + duration);
-                if (idx === 0) activeSources[id] = osc;
+                oscNodes.push(osc);
             });
+            registerActiveSource(id, oscNodes, allowsOverlap);
         }
 
-        function playTom1(id, volume = 1.0) { playTom(id, 300, 0.4, volume); }
-        function playTom2(id, volume = 1.0) { playTom(id, 200, 0.5, volume); }
-        function playTom3(id, volume = 1.0) { playTom(id, 100, 0.6, volume); }
+        function playTom1(id, volume = 1.0, allowsOverlap = false) { playTom(id, 300, 0.4, volume, allowsOverlap); }
+        function playTom2(id, volume = 1.0, allowsOverlap = false) { playTom(id, 200, 0.5, volume, allowsOverlap); }
+        function playTom3(id, volume = 1.0, allowsOverlap = false) { playTom(id, 100, 0.6, volume, allowsOverlap); }
 
-        function playTom(id, baseFreq, duration, volume = 1.0) {
+        function playTom(id, baseFreq, duration, volume = 1.0, allowsOverlap = false) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
@@ -1005,7 +1060,7 @@
             
             osc.start(now);
             osc.stop(now + duration);
-            activeSources[id] = osc;
+            registerActiveSource(id, osc, allowsOverlap);
         }
 
         function showMessage(text, isError = false) {
@@ -1048,7 +1103,7 @@
                 ws.classList.remove('edit-mode-active');
                 editToggle.classList.replace('bg-indigo-600', 'bg-gray-800');
                 editToggle.classList.replace('text-white', 'text-gray-200');
-                editToggle.innerHTML = '<i class="fa-solid fa-arrows-up-down-left-right"></i> <span class="hidden sm:inline">Edit Layout & Keys</span>';
+                editToggle.innerHTML = '<i class="fa-solid fa-arrows-up-down-left-right"></i> <span class="hidden sm:inline">Edit Layout</span>';
                 addPadBtn.classList.add('hidden');
                 addPadBtn.classList.remove('flex');
                 resetDefaultBtn.classList.add('hidden');
@@ -1058,7 +1113,7 @@
 
         resetDefaultBtn.addEventListener('click', () => {
             if (confirm("Reset layout, volume, and custom keys to default?")) {
-                localStorage.removeItem('prakaipad_config_v4'); // แก้จาก v3 เป็น v4
+                localStorage.removeItem('prakaipad_config_v4');
                 if (db) {
                     try {
                         const tx = db.transaction([STORE_NAME], 'readwrite');
@@ -1069,6 +1124,130 @@
             }
         });
 
+        function getSavedPresets() {
+            const saved = localStorage.getItem('prakaipad_presets_list');
+            return saved ? JSON.parse(saved) : {};
+        }
+
+        document.getElementById('save-preset-btn').addEventListener('click', async () => {
+            const presetName = prompt("ตั้งชื่อ Preset (เช่น แนวนอน / แนวตั้ง / กลองชุด 1):");
+            if (!presetName || presetName.trim() === "") return;
+
+            const cleanName = presetName.trim();
+            const presets = getSavedPresets();
+            
+            presets[cleanName] = JSON.parse(JSON.stringify(drumPadsConfig));
+            localStorage.setItem('prakaipad_presets_list', JSON.stringify(presets));
+
+            if (db) {
+                for (const padId in customBuffers) {
+                    try {
+                        const tx = db.transaction([STORE_NAME], 'readonly');
+                        const store = tx.objectStore(STORE_NAME);
+                        const request = store.get(padId);
+                        request.onsuccess = () => {
+                            if (request.result) {
+                                saveAudioToDB(`preset_${cleanName}_${padId}`, request.result);
+                            }
+                        };
+                    } catch (e) {}
+                }
+            }
+
+            showMessage(`บันทึก Preset "${cleanName}" เรียบร้อยแล้ว!`);
+        });
+
+        document.getElementById('load-preset-btn').addEventListener('click', () => {
+            const presets = getSavedPresets();
+            const listContainer = document.getElementById('preset-list');
+            listContainer.innerHTML = '';
+
+            const presetNames = Object.keys(presets);
+            if (presetNames.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-400 text-xs py-4">ไม่มี Preset ที่บันทึกไว้</p>';
+            } else {
+                presetNames.forEach(name => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-gray-700/60 hover:bg-gray-700 p-2 rounded-lg text-xs text-white transition';
+                    item.innerHTML = `
+                        <span class="font-medium cursor-pointer flex-1 text-left" onclick="applyPreset('${name}')">${name}</span>
+                        <button onclick="deletePreset('${name}')" class="text-red-400 hover:text-red-300 p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            const modal = document.getElementById('preset-modal');
+            modal.style.display = 'flex';
+            modal.classList.remove('pointer-events-none');
+            setTimeout(() => modal.style.opacity = '1', 10);
+        });
+
+        document.getElementById('close-preset-modal').addEventListener('click', closePresetModal);
+
+        function closePresetModal() {
+            const modal = document.getElementById('preset-modal');
+            modal.style.opacity = '0';
+            modal.classList.add('pointer-events-none');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        window.applyPreset = async function(name) {
+            const presets = getSavedPresets();
+            if (!presets[name]) return;
+
+            drumPadsConfig = presets[name];
+            saveConfigToLocalStorage();
+
+            if (db) {
+                const allBlobs = await loadAllAudioFromDB();
+                for (const key in allBlobs) {
+                    if (key.startsWith(`preset_${name}_`)) {
+                        const padId = key.replace(`preset_${name}_`, '');
+                        const blob = allBlobs[key];
+                        saveAudioToDB(padId, blob);
+                        if (blob) {
+                            const arrayBuffer = await blob.arrayBuffer();
+                            audioCtx.decodeAudioData(arrayBuffer, (decoded) => {
+                                customBuffers[padId] = decoded;
+                            });
+                        }
+                    }
+                }
+            }
+
+            renderPads();
+            closePresetModal();
+            showMessage(`โหลด Preset "${name}" เรียบร้อยแล้ว!`);
+        };
+
+        window.deletePreset = function(name) {
+            if (!confirm(`ต้องการลบ Preset "${name}" หรือไม่?`)) return;
+            const presets = getSavedPresets();
+            delete presets[name];
+            localStorage.setItem('prakaipad_presets_list', JSON.stringify(presets));
+            
+            if (db) {
+                const tx = db.transaction([STORE_NAME], 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                const req = store.openCursor();
+                req.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        if (cursor.key.startsWith(`preset_${name}_`)) {
+                            store.delete(cursor.key);
+                        }
+                        cursor.continue();
+                    }
+                };
+            }
+            
+            document.getElementById('load-preset-btn').click();
+            showMessage(`ลบ Preset "${name}" แล้ว`);
+        };
+
         window.addEventListener('load', async () => {
             await initIndexedDB();
             initializePositionsAndConfig();
@@ -1077,6 +1256,7 @@
             if (savedAudioBlobs && Object.keys(savedAudioBlobs).length > 0) {
                 initAudio();
                 for (const padId in savedAudioBlobs) {
+                    if (padId.startsWith('preset_')) continue;
                     try {
                         const blob = savedAudioBlobs[padId];
                         if (blob) {
