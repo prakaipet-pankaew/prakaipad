@@ -161,7 +161,7 @@
             </div>
             <div>
                 <h1 class="font-orbitron font-bold text-base sm:text-xl text-white tracking-wide">Prakaipad</h1>
-                <p class="text-[9px] sm:text-[10px] text-gray-400">Version 2026.11.04.21.03 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
+                <p class="text-[9px] sm:text-[10px] text-gray-400">Version 2026.11.04.21.15 <span class="text-indigo-400 font-semibold">by Prakaipet Pankaew</span></p>
             </div>
         </div>
         
@@ -306,16 +306,16 @@
 
         // ตั้งค่า allowsOverlap: false เป็นค่าเริ่มต้น (ปิด Polyphony) และ zIndex: 5
         const defaultPadsConfig = [
-            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', defaultSynth: 'playCrash', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', defaultSynth: 'playRide', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', defaultSynth: 'playTom1', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', defaultSynth: 'playTom2', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', defaultSynth: 'playTom3', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', defaultSynth: 'playHiHatClose', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', defaultSynth: 'playHiHatOpen', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', defaultSynth: 'playSnareRim', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', defaultSynth: 'playSnareCenter', volume: 1.0, width: 110, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
-            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', defaultSynth: 'playKick', volume: 1.0, width: 140, height: 110, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', defaultSynth: 'playCrash', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', defaultSynth: 'playRide', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', defaultSynth: 'playTom1', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', defaultSynth: 'playTom2', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', defaultSynth: 'playTom3', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', defaultSynth: 'playHiHatClose', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', defaultSynth: 'playHiHatOpen', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', defaultSynth: 'playSnareRim', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', defaultSynth: 'playSnareCenter', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
+            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', defaultSynth: 'playKick', volume: 1.0, width: 140, height: 140, x: 0, y: 0, allowsOverlap: false, zIndex: 5 },
         ];
 
         let drumPadsConfig = [];
@@ -370,8 +370,8 @@
 
                 drumPadsConfig.forEach(pad => {
                     const pos = layoutMap[pad.id] || {x: 0.5, y: 0.5};
-                    const wPad = pad.width || 110;
-                    const hPad = pad.height || 110;
+                    const wPad = pad.width || 140;
+                    const hPad = pad.height || 140;
                     let pxX = (pos.x * w) - (wPad / 2);
                     let pxY = (pos.y * h) - (hPad / 2);
                     pad.x = Math.max(0, Math.min(pxX, w - wPad));
@@ -397,8 +397,8 @@
             padEl.style.top = `${pad.y}px`;
             padEl.style.zIndex = pad.zIndex !== undefined ? pad.zIndex : 5;
             
-            const currentWidth = pad.width !== undefined ? pad.width : 110;
-            const currentHeight = pad.height !== undefined ? pad.height : 110;
+            const currentWidth = pad.width !== undefined ? pad.width : 140;
+            const currentHeight = pad.height !== undefined ? pad.height : 140;
             padEl.style.width = `${currentWidth}px`;
             padEl.style.height = `${currentHeight}px`;
 
@@ -741,8 +741,8 @@
             const colors = ['glow-green', 'glow-teal', 'glow-cyan', 'glow-blue', 'glow-pink', 'glow-amber'];
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             
-            const wPad = 110;
-            const hPad = 110;
+            const wPad = 140;
+            const hPad = 140;
             let newX = (workspace.clientWidth / 2) - (wPad / 2);
             let newY = (workspace.clientHeight / 2) - (hPad / 2);
 
