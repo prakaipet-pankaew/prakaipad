@@ -34,15 +34,15 @@
 
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
+        /* กำหนดพื้นหลังเริ่มต้นของแป้น */
         .drum-pad {
             position: absolute;
-            width: 110px;
-            height: 110px;
             border-radius: 1.5rem;
+            /* เปลี่ยนพื้นหลังเริ่มต้นตรงนี้ให้เข้ากับธีม */
             background: linear-gradient(145deg, #1e2235, #151826);
-            border: 2px solid rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             box-shadow: 5px 5px 15px #0a0b11, -5px -5px 15px #1c2031;
-            transition: transform 0.05s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+            transition: transform 0.05s ease, box-shadow 0.1s ease, border-color 0.1s ease, background 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -52,9 +52,9 @@
         }
 
         #pad-kick {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
+            width: 110px;
+            height: 110px;
+            /* เอา border-radius: 50%; ออก เพื่อให้เป็นสี่เหลี่ยมโค้งมนเหมือนปุ่มอื่น */
         }
 
         .drum-pad::before {
@@ -67,18 +67,25 @@
             border-radius: inherit;
         }
 
-        .glow-amber.active { box-shadow: 0 0 25px rgba(var(--pad-amber), 0.8), inset 0 0 15px rgba(var(--pad-amber), 0.5); border-color: rgb(var(--pad-amber)); transform: scale(0.92); z-index: 10; }
-        .glow-pink.active { box-shadow: 0 0 25px rgba(var(--pad-pink), 0.8), inset 0 0 15px rgba(var(--pad-pink), 0.5); border-color: rgb(var(--pad-pink)); transform: scale(0.92); z-index: 10; }
-        .glow-red.active { box-shadow: 0 0 25px rgba(var(--pad-red), 0.8), inset 0 0 15px rgba(var(--pad-red), 0.5); border-color: rgb(var(--pad-red)); transform: scale(0.92); z-index: 10; }
-        .glow-cyan.active { box-shadow: 0 0 25px rgba(var(--pad-cyan), 0.8), inset 0 0 15px rgba(var(--pad-cyan), 0.5); border-color: rgb(var(--pad-cyan)); transform: scale(0.92); z-index: 10; }
-        .glow-teal.active { box-shadow: 0 0 25px rgba(var(--pad-teal), 0.8), inset 0 0 15px rgba(var(--pad-teal), 0.5); border-color: rgb(var(--pad-teal)); transform: scale(0.92); z-index: 10; }
-        .glow-blue.active { box-shadow: 0 0 25px rgba(var(--pad-blue), 0.8), inset 0 0 15px rgba(var(--pad-blue), 0.5); border-color: rgb(var(--pad-blue)); transform: scale(0.92); z-index: 10; }
-        .glow-indigo.active { box-shadow: 0 0 25px rgba(var(--pad-indigo), 0.8), inset 0 0 15px rgba(var(--pad-indigo), 0.5); border-color: rgb(var(--pad-indigo)); transform: scale(0.92); z-index: 10; }
-        .glow-violet.active { box-shadow: 0 0 25px rgba(var(--pad-violet), 0.8), inset 0 0 15px rgba(var(--pad-violet), 0.5); border-color: rgb(var(--pad-violet)); transform: scale(0.92); z-index: 10; }
-        .glow-yellow.active { box-shadow: 0 0 25px rgba(var(--pad-yellow), 0.8), inset 0 0 15px rgba(var(--pad-yellow), 0.5); border-color: rgb(var(--pad-yellow)); transform: scale(0.92); z-index: 10; }
-        .glow-purple.active { box-shadow: 0 0 25px rgba(var(--pad-purple), 0.8), inset 0 0 15px rgba(var(--pad-purple), 0.5); border-color: rgb(var(--pad-purple)); transform: scale(0.92); z-index: 10; }
-        .glow-green.active { box-shadow: 0 0 25px rgba(var(--pad-green), 0.8), inset 0 0 15px rgba(var(--pad-green), 0.5); border-color: rgb(var(--pad-green)); transform: scale(0.92); z-index: 10; }
+        /* --- กำหนดสีพื้นหลังและขอบของแต่ละธีมสี --- */
+        .glow-amber { background: linear-gradient(145deg, #451a03, #291102); border-color: rgb(var(--pad-amber)); }
+        .glow-pink { background: linear-gradient(145deg, #500724, #300414); border-color: rgb(var(--pad-pink)); }
+        .glow-red { background: linear-gradient(145deg, #450a0a, #2b0404); border-color: rgb(var(--pad-red)); }
+        .glow-cyan { background: linear-gradient(145deg, #083344, #041e2b); border-color: rgb(var(--pad-cyan)); }
+        .glow-teal { background: linear-gradient(145deg, #042f2e, #021a19); border-color: rgb(var(--pad-teal)); }
+        .glow-blue { background: linear-gradient(145deg, #1e3a8a, #112254); border-color: rgb(var(--pad-blue)); }
+        .glow-indigo { background: linear-gradient(145deg, #312e81, #1e1b4b); border-color: rgb(var(--pad-indigo)); }
+        .glow-violet { background: linear-gradient(145deg, #2e1065, #1b083d); border-color: rgb(var(--pad-violet)); }
+        .glow-yellow { background: linear-gradient(145deg, #422006, #261203); border-color: rgb(var(--pad-yellow)); }
+        .glow-purple { background: linear-gradient(145deg, #3b0764, #23043d); border-color: rgb(var(--pad-purple)); }
+        .glow-green { background: linear-gradient(145deg, #064e3b, #032b20); border-color: rgb(var(--pad-green)); }
 
+        /* เอฟเฟกต์ตอนกดแป้น (Active) ให้สว่างขึ้น */
+        .drum-pad.active { 
+            transform: scale(0.92); 
+            filter: brightness(1.3);
+            z-index: 10; 
+        }
         .edit-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -89,20 +96,68 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             z-index: 20;
-            padding: 6px;
+            padding: 4px;
         }
 
         .edit-mode-active .edit-overlay {
             display: flex;
         }
         
-        .edit-mode-active .drum-pad {
-            border: 2px dashed #4b5563;
-            cursor: move;
+                /* แสดงไอคอนลากเฉพาะตอนเปิด Edit Mode */
+        .edit-mode-active .edit-drag-icon {
+            display: block !important;
         }
 
+        /* ตอนเปิด Edit Mode ไม่ต้องให้เคอร์เซอร์บนแป้นกลองเป็นรูปย้าย (ให้เปลี่ยนเฉพาะตอนชี้ปุ่มย้าย) */
+        .edit-mode-active .drum-pad {
+            border: 2px dashed #4b5563;
+            cursor: default; 
+        }
+
+        /* สัญลักษณ์ลูกศรตรงมุมสำหรับลากขยายขนาด */
+        /* --- ตัวควบคุมปรับขนาดแยกอิสระ (ขวา = ความกว้าง, ล่าง = ความสูง) --- */
+        .resize-width {
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 40%;
+            cursor: ew-resize;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            z-index: 30;
+            touch-action: none;
+        }
+        .resize-width:hover { color: #ffffff; }
+
+        .resize-height {
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40%;
+            height: 10px;
+            cursor: ns-resize;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            z-index: 30;
+            touch-action: none;
+        }
+        .resize-height:hover { color: #ffffff; }
+
+        /* แสดงเฉพาะตอนเปิดโหมด Edit */
+        .edit-mode-active .resize-width,
+        .edit-mode-active .resize-height {
+            display: flex !important;
+        }
+        
         #message-box, #key-prompt {
             transition: opacity 0.3s, transform 0.3s;
             pointer-events: none;
@@ -117,6 +172,18 @@
             font-weight: bold;
             color: #d1d5db;
         }
+        /* --- กำหนดสีของปุ่มคีย์ลัด (keycap) ให้เข้ากับสีของแป้นกลอง --- */
+        .glow-amber .keycap  { background: #78350f; color: #fef3c7; border-bottom-color: #451a03; }
+        .glow-pink .keycap   { background: #831843; color: #fce7f3; border-bottom-color: #500724; }
+        .glow-red .keycap    { background: #7f1d1d; color: #fee2e2; border-bottom-color: #450a0a; }
+        .glow-cyan .keycap   { background: #164e63; color: #cffafe; border-bottom-color: #083344; }
+        .glow-teal .keycap   { background: #134e4a; color: #ccfbf1; border-bottom-color: #042f2e; }
+        .glow-blue .keycap   { background: #1e3a8a; color: #dbeafe; border-bottom-color: #172554; }
+        .glow-indigo .keycap { background: #312e81; color: #e0e7ff; border-bottom-color: #1e1b4b; }
+        .glow-violet .keycap { background: #4c1d95; color: #ede9fe; border-bottom-color: #2e1065; }
+        .glow-yellow .keycap { background: #713f12; color: #fef9c3; border-bottom-color: #422006; }
+        .glow-purple .keycap { background: #581c87; color: #f3e8ff; border-bottom-color: #3b0764; }
+        .glow-green .keycap  { background: #14532d; color: #dcfce7; border-bottom-color: #052e16; }
     </style>
 </head>
 <body class="w-screen h-screen flex flex-col bg-[#0f111a]">
@@ -133,10 +200,6 @@
         </div>
         
         <div class="flex items-center gap-2 sm:gap-4">
-            <button id="mic-connect-btn" onclick="connectMicPedal()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg cursor-pointer">
-                <i class="fa-solid fa-microphone-lines"></i>
-                <span id="mic-btn-text"> Conect Pedal </span>
-            </button>
             <button id="add-pad-btn" class="hidden items-center gap-2 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500 text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg transition text-white shadow-lg">
                 <i class="fa-solid fa-plus"></i>
                 <span class="hidden sm:inline">Add Pad</span>
@@ -183,57 +246,6 @@
         const activeSources = {};
         const workspace = document.getElementById('workspace');
 // --- [เพิ่มส่วนนี้] ตัวแปรและฟังก์ชันสำหรับดักจับสัญญาณ Pedal ผ่าน Mic ---
-        let micStream = null;
-        let micAnalyser = null;
-        let isListeningMic = false;
-        let lastStompTime = 0;
-
-        // ฟังก์ชันสำหรับกดปุ่มเชื่อมต่อไมค์ (ผูกกับปุ่มบนหน้าเว็บของคุณได้เลย)
-        async function connectMicPedal() {
-            initAudio(); // เรียกใช้ AudioContext เดิมของคุณ
-            try {
-                micStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }, 
-                    video: false 
-                });
-                
-                const source = audioCtx.createMediaStreamSource(micStream);
-                micAnalyser = audioCtx.createAnalyser();
-                micAnalyser.fftSize = 256;
-                source.connect(micAnalyser);
-                
-                isListeningMic = true;
-                console.log('Pedal Mic: Active & Listening');
-
-                // เริ่มรันลูปตรวจจับสัญญาณ
-                detectMicPedalStomp();
-            } catch (err) {
-                alert('Cannot access microphone: ' + err.message);
-            }
-        }
-
-        // ลูปตรวจสอบค่าพลังงานเสียงจากช่องไมค์แบบเรียลไทม์
-        function detectMicPedalStomp() {
-            if (!isListeningMic || !micAnalyser) return;
-            
-            const dataArray = new Uint8Array(micAnalyser.frequencyBinCount);
-            micAnalyser.getByteTimeDomainData(dataArray);
-
-            let peak = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-                let sample = Math.abs(dataArray[i] - 128);
-                if (sample > peak) peak = sample;
-            }
-
-            // ค่า Threshold (25) และ Debounce (120ms) เพื่อกันสัญญาณกวน
-            const now = Date.now();
-            if (peak > 25 && (now - lastStompTime > 120)) { 
-                triggerPad('pad-kick'); // สั่งตีแป้น Kick เดิมของคุณ
-                lastStompTime = now;
-            }
-
-            requestAnimationFrame(detectMicPedalStomp);
-        }
         const DB_NAME = 'PrakaipadDB_v4';
         const STORE_NAME = 'audioBuffers';
         let db = null;
@@ -303,31 +315,33 @@
         }
 
         const defaultPadsConfig = [
-            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', icon: 'fa-sun', colorHex: 'text-yellow-400', defaultSynth: 'playCrash', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', icon: 'fa-circle-dot', colorHex: 'text-purple-400', defaultSynth: 'playRide', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', icon: 'fa-drum', colorHex: 'text-blue-400', defaultSynth: 'playTom1', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', icon: 'fa-drum', colorHex: 'text-indigo-400', defaultSynth: 'playTom2', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', icon: 'fa-database', colorHex: 'text-violet-400', defaultSynth: 'playTom3', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', icon: 'fa-compact-disc', colorHex: 'text-cyan-400', defaultSynth: 'playHiHatClose', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', icon: 'fa-compact-disc', colorHex: 'text-teal-400', defaultSynth: 'playHiHatOpen', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', icon: 'fa-ring', colorHex: 'text-red-400', defaultSynth: 'playSnareRim', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', icon: 'fa-bullseye', colorHex: 'text-pink-400', defaultSynth: 'playSnareCenter', volume: 1.0, x: 0, y: 0 },
-            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', icon: 'fa-shoe-prints', colorHex: 'text-amber-500', defaultSynth: 'playKick', volume: 1.0, x: 0, y: 0 },
+            { id: 'pad-crash', name: 'CRASH 1', key: 'T', colorClass: 'glow-yellow', defaultSynth: 'playCrash', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-ride', name: 'RIDE', key: 'Y', colorClass: 'glow-purple', defaultSynth: 'playRide', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-tom1', name: 'TOM 1', key: 'E', colorClass: 'glow-blue', defaultSynth: 'playTom1', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-tom2', name: 'TOM 2', key: 'R', colorClass: 'glow-indigo', defaultSynth: 'playTom2', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-tom3', name: 'TOM 3', key: 'F', colorClass: 'glow-violet', defaultSynth: 'playTom3', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-hh-close', name: 'HI-HAT (C)', key: 'Q', colorClass: 'glow-cyan', defaultSynth: 'playHiHatClose', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-hh-open', name: 'HI-HAT (O)', key: 'W', colorClass: 'glow-teal', defaultSynth: 'playHiHatOpen', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-snare-rim', name: 'SNARE RIM', key: 'A', colorClass: 'glow-red', defaultSynth: 'playSnareRim', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-snare-center', name: 'SNARE CTR', key: 'S', colorClass: 'glow-pink', defaultSynth: 'playSnareCenter', volume: 1.0, size: 110, x: 0, y: 0 },
+            { id: 'pad-kick', name: 'KICK (BASS)', key: 'SPACE', colorClass: 'glow-amber', defaultSynth: 'playKick', volume: 1.0, size: 110, x: 0, y: 0 },
         ];
 
         let drumPadsConfig = [];
 
         function saveConfigToLocalStorage() {
-            localStorage.setItem('prakaipad_config_v3', JSON.stringify(drumPadsConfig));
+            localStorage.setItem('prakaipad_config_v4', JSON.stringify(drumPadsConfig));
         }
 
         function loadConfigFromLocalStorage() {
-            const saved = localStorage.getItem('prakaipad_config_v3');
+            const saved = localStorage.getItem('prakaipad_config_v4');
             if (saved) {
                 try {
                     drumPadsConfig = JSON.parse(saved);
                     drumPadsConfig.forEach(p => {
                         if (p.volume === undefined) p.volume = 1.0;
+                        if (p.width === undefined) p.width = p.size || 110;
+                        if (p.height === undefined) p.height = p.size || 110;
                         if (p.id.startsWith('pad-custom-')) {
                             const num = parseInt(p.id.replace('pad-custom-', ''));
                             if (!isNaN(num) && num > customPadCount) customPadCount = num;
@@ -388,36 +402,83 @@
 
         function createPadElement(pad) {
             const padEl = document.createElement('div');
-            padEl.className = `drum-pad ${pad.colorClass}`;
+            const currentColor = pad.colorClass || 'glow-indigo';
+            padEl.className = `drum-pad ${currentColor}`;
             padEl.id = pad.id;
             padEl.style.left = `${pad.x}px`;
             padEl.style.top = `${pad.y}px`;
 
+            // กำหนดความกว้างและความสูงแยกกัน (ถ้ายังไม่มีให้ใช้ค่าเริ่มต้น 110px)
+            const currentWidth = pad.width !== undefined ? pad.width : 110;
+            const currentHeight = pad.height !== undefined ? pad.height : 110;
+            padEl.style.width = `${currentWidth}px`;
+            padEl.style.height = `${currentHeight}px`;
+
             const displayKey = pad.key === ' ' ? 'SPACE' : pad.key;
-            const hasCustomAudio = customBuffers[pad.id] ? true : false;
-            const displayName = hasCustomAudio && pad.name !== 'CUSTOM' ? 'CUSTOM' : pad.name;
-            const displayIcon = hasCustomAudio ? 'fa-music' : pad.icon;
+            const displayName = pad.name;
             const currentVol = pad.volume !== undefined ? pad.volume : 1.0;
 
             padEl.innerHTML = `
-                <i class="fa-solid ${displayIcon} text-2xl ${pad.colorHex} mb-0.5 pointer-events-none"></i>
-                <span class="font-orbitron font-bold text-[10px] text-gray-200 tracking-wide text-center pointer-events-none">${displayName}</span>
-                <div class="mt-0.5 keycap pointer-events-none key-display">${displayKey || '-'}</div>
+                <!-- ปุ่มเฉพาะสำหรับลากย้าย -->
+                <div class="drag-handle absolute -top-[15px] left-0 text-gray-400 hover:text-white cursor-move hidden edit-drag-icon p-1 z-30">
+                    <i class="fa-solid fa-arrows-up-down-left-right text-xs"></i>
+                </div>
+
+                <!-- [ใหม่] ตัวปรับความกว้างด้านขวา -->
+                <div class="resize-width" title="Drag to resize width">
+                    <i class="fa-solid fa-grip-vertical text-[10px]"></i>
+                </div>
+
+                <!-- [ใหม่] ตัวปรับความสูงด้านล่าง -->
+                <div class="resize-height" title="Drag to resize height">
+                    <i class="fa-solid fa-grip-lines text-[10px]"></i>
+                </div>
+
+                <!-- ไม่มีไอคอนรูปภาพแล้ว แสดงเฉพาะชื่อและคีย์ -->
+                <span class="font-orbitron font-bold text-xs text-gray-200 tracking-wide text-center pointer-events-none mt-2">${displayName}</span>
+                <div class="mt-1 keycap pointer-events-none key-display">${displayKey || '-'}</div>
                 
                 <div class="edit-overlay">
-                    <div class="flex items-center justify-between w-[90%] bg-gray-900/80 px-2 py-0.5 rounded text-[9px] text-gray-300">
-                        <span>Vol</span>
-                        <input type="range" min="0" max="1" step="0.05" value="${currentVol}" class="vol-slider w-16 accent-indigo-500 cursor-pointer">
+                    <!-- ส่วนปรับความดัง Vol -->
+                    <div class="flex items-center justify-between w-[92%] bg-gray-900/90 px-1.5 py-0.5 rounded text-[9px] text-gray-300">
+                        <span class="text-[8px] font-semibold">Vol</span>
+                        <input type="range" min="0" max="1" step="0.05" value="${currentVol}" class="vol-slider w-14 accent-indigo-500 cursor-pointer">
                     </div>
-                    <button class="key-btn bg-gray-700 hover:bg-gray-600 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
-                        <i class="fa-solid fa-keyboard"></i> Key
-                    </button>
-                    <button class="upload-btn bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
-                        <i class="fa-solid fa-folder-open"></i> Audio
-                    </button>
-                    <button class="delete-btn bg-red-600 hover:bg-red-500 text-white px-2 py-0.5 rounded text-[9px] font-semibold w-[90%] flex justify-center items-center gap-1">
-                        <i class="fa-solid fa-trash"></i> Delete
-                    </button>
+
+                    <!-- ส่วนเลือกสี Color -->
+                    <div class="flex items-center justify-between w-[92%] bg-gray-900/90 px-1.5 py-0.5 rounded text-[9px] text-gray-300">
+                        <span class="text-[8px] font-semibold">Color</span>
+                        <select class="color-select bg-gray-800 text-white rounded px-0.5 py-0.5 text-[8px] cursor-pointer outline-none">
+                            <option value="glow-amber" ${currentColor === 'glow-amber' ? 'selected' : ''}>Amber</option>
+                            <option value="glow-pink" ${currentColor === 'glow-pink' ? 'selected' : ''}>Pink</option>
+                            <option value="glow-red" ${currentColor === 'glow-red' ? 'selected' : ''}>Red</option>
+                            <option value="glow-cyan" ${currentColor === 'glow-cyan' ? 'selected' : ''}>Cyan</option>
+                            <option value="glow-teal" ${currentColor === 'glow-teal' ? 'selected' : ''}>Teal</option>
+                            <option value="glow-blue" ${currentColor === 'glow-blue' ? 'selected' : ''}>Blue</option>
+                            <option value="glow-indigo" ${currentColor === 'glow-indigo' ? 'selected' : ''}>Indigo</option>
+                            <option value="glow-violet" ${currentColor === 'glow-violet' ? 'selected' : ''}>Violet</option>
+                            <option value="glow-yellow" ${currentColor === 'glow-yellow' ? 'selected' : ''}>Yellow</option>
+                            <option value="glow-purple" ${currentColor === 'glow-purple' ? 'selected' : ''}>Purple</option>
+                            <option value="glow-green" ${currentColor === 'glow-green' ? 'selected' : ''}>Green</option>
+                        </select>
+                    </div>
+
+
+                    <!-- รวมปุ่มฟังก์ชันเป็นไอคอน 4 ปุ่มเรียงแถวนวนขนาน -->
+                    <div class="flex items-center justify-center gap-1 w-[92%] mt-0.5">
+                        <button title="Rename" class="rename-btn bg-yellow-600 hover:bg-yellow-500 text-white w-6 h-6 rounded flex justify-center items-center text-[10px] transition shrink-0">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button title="Assign Key" class="key-btn bg-gray-700 hover:bg-gray-600 text-white w-6 h-6 rounded flex justify-center items-center text-[10px] transition shrink-0">
+                            <i class="fa-solid fa-keyboard"></i>
+                        </button>
+                        <button title="Upload Audio" class="upload-btn bg-indigo-600 hover:bg-indigo-500 text-white w-6 h-6 rounded flex justify-center items-center text-[10px] transition shrink-0">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </button>
+                        <button title="Delete Pad" class="delete-btn bg-red-600 hover:bg-red-500 text-white w-6 h-6 rounded flex justify-center items-center text-[10px] transition shrink-0">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -429,6 +490,7 @@
 
             workspace.appendChild(padEl);
             setupDraggable(padEl, pad);
+            setupResizableIndependent(padEl, pad); // [เปลี่ยนมาเรียกใช้ฟังก์ชันแยกอิสระ]
             setupEditButtonsForPad(padEl, pad);
         }
 
@@ -436,22 +498,10 @@
             let isDragging = false;
             let startX, startY, initialLeft, initialTop;
 
-            el.addEventListener('pointerdown', (e) => {
-                if (!isEditMode) return;
-                if (e.target.closest('button') || e.target.closest('input')) return;
+            const dragHandle = el.querySelector('.drag-handle');
+            if (!dragHandle) return;
 
-                isDragging = true;
-                el.setPointerCapture(e.pointerId);
-                
-                startX = e.clientX;
-                startY = e.clientY;
-                initialLeft = parseFloat(el.style.left) || 0;
-                initialTop = parseFloat(el.style.top) || 0;
-                
-                el.style.zIndex = 100;
-            });
-
-            el.addEventListener('pointermove', (e) => {
+            const onPointerMove = (e) => {
                 if (!isDragging) return;
                 
                 const dx = e.clientX - startX;
@@ -472,23 +522,155 @@
                 el.style.top = `${newTop}px`;
                 padConfig.x = newLeft;
                 padConfig.y = newTop;
-            });
-
-            const stopDrag = (e) => {
-                if (!isDragging) return;
-                isDragging = false;
-                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
-                el.style.zIndex = 5;
-                saveConfigToLocalStorage();
             };
 
-            el.addEventListener('pointerup', stopDrag);
-            el.addEventListener('pointercancel', stopDrag);
+            const onPointerUp = (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                try { dragHandle.releasePointerCapture(e.pointerId); } catch(err) {}
+                el.style.zIndex = 5;
+                saveConfigToLocalStorage();
+                
+                window.removeEventListener('pointermove', onPointerMove);
+                window.removeEventListener('pointerup', onPointerUp);
+                window.removeEventListener('pointercancel', onPointerUp);
+            };
+
+            dragHandle.addEventListener('pointerdown', (e) => {
+                if (!isEditMode) return;
+                e.stopPropagation();
+
+                isDragging = true;
+                try { dragHandle.setPointerCapture(e.pointerId); } catch(err) {}
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = parseFloat(el.style.left) || 0;
+                initialTop = parseFloat(el.style.top) || 0;
+                
+                el.style.zIndex = 100;
+
+                window.addEventListener('pointermove', onPointerMove);
+                window.addEventListener('pointerup', onPointerUp);
+                window.addEventListener('pointercancel', onPointerUp);
+            });
+        }
+
+        function setupResizableIndependent(el, padConfig) {
+            const resizerWidth = el.querySelector('.resize-width');
+            const resizerHeight = el.querySelector('.resize-height');
+            const ws = document.getElementById('workspace');
+
+            // 1. จัดการลากปรับความกว้าง (ทางขวา)
+            if (resizerWidth) {
+                let isResizingW = false;
+                let startX, startW;
+
+                const onMoveW = (e) => {
+                    if (!isResizingW) return;
+                    const dx = e.clientX - startX;
+                    // เปิดกว้างได้สูงสุดเท่ากับพื้นที่หน้าจอที่เหลือ (ไม่มีขีดจำกัดตายตัว)
+                    const maxW = ws.clientWidth - el.offsetLeft;
+                    let newW = Math.max(50, startW + dx);
+                    newW = Math.min(newW, maxW);
+
+                    el.style.width = `${newW}px`;
+                    padConfig.width = newW;
+                };
+
+                const onUpW = (e) => {
+                    if (!isResizingW) return;
+                    isResizingW = false;
+                    try { resizerWidth.releasePointerCapture(e.pointerId); } catch(err) {}
+                    saveConfigToLocalStorage();
+                    window.removeEventListener('pointermove', onMoveW);
+                    window.removeEventListener('pointerup', onUpW);
+                };
+
+                resizerWidth.addEventListener('pointerdown', (e) => {
+                    if (!isEditMode) return;
+                    e.stopPropagation();
+                    isResizingW = true;
+                    try { resizerWidth.setPointerCapture(e.pointerId); } catch(err) {}
+                    startX = e.clientX;
+                    startW = el.offsetWidth;
+                    window.addEventListener('pointermove', onMoveW);
+                    window.addEventListener('pointerup', onUpW);
+                });
+            }
+
+            // 2. จัดการลากปรับความสูง (ทางล่าง)
+            if (resizerHeight) {
+                let isResizingH = false;
+                let startY, startH;
+
+                const onMoveH = (e) => {
+                    if (!isResizingH) return;
+                    const dy = e.clientY - startY;
+                    // สูงได้สูงสุดเท่ากับพื้นที่หน้าจอแนวตั้งที่เหลือ (ไม่มีขีดจำกัดตายตัว)
+                    const maxH = ws.clientHeight - el.offsetTop;
+                    let newH = Math.max(50, startH + dy);
+                    newH = Math.min(newH, maxH);
+
+                    el.style.height = `${newH}px`;
+                    padConfig.height = newH;
+                };
+
+                const onUpH = (e) => {
+                    if (!isResizingH) return;
+                    isResizingH = false;
+                    try { resizerHeight.releasePointerCapture(e.pointerId); } catch(err) {}
+                    saveConfigToLocalStorage();
+                    window.removeEventListener('pointermove', onMoveH);
+                    window.removeEventListener('pointerup', onUpH);
+                };
+
+                resizerHeight.addEventListener('pointerdown', (e) => {
+                    if (!isEditMode) return;
+                    e.stopPropagation();
+                    isResizingH = true;
+                    try { resizerHeight.setPointerCapture(e.pointerId); } catch(err) {}
+                    startY = e.clientY;
+                    startH = el.offsetHeight;
+                    window.addEventListener('pointermove', onMoveH);
+                    window.addEventListener('pointerup', onUpH);
+                });
+            }
         }
 
         let currentUploadPadId = null;
 
         function setupEditButtonsForPad(padEl, padConfig) {
+            const colorSelect = padEl.querySelector('.color-select');
+            if (colorSelect) {
+                colorSelect.addEventListener('pointerdown', (e) => e.stopPropagation());
+                colorSelect.addEventListener('change', (e) => {
+                    const newColor = e.target.value;
+                    // ลบคลาสสี glow ทั้งหมดออกก่อน
+                    padEl.classList.remove('glow-amber', 'glow-pink', 'glow-red', 'glow-cyan', 'glow-teal', 'glow-blue', 'glow-indigo', 'glow-violet', 'glow-yellow', 'glow-purple', 'glow-green');
+                    // ใส่คลาสสีใหม่เข้าไป
+                    padEl.classList.add(newColor);
+                    
+                    padConfig.colorClass = newColor;
+                    saveConfigToLocalStorage();
+                });
+            }
+        
+            const renameBtn = padEl.querySelector('.rename-btn');
+            if (renameBtn) {
+                renameBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+                renameBtn.addEventListener('click', () => {
+                    const newName = prompt("ใส่ชื่อแป้นกลองใหม่:", padConfig.name);
+                    if (newName !== null && newName.trim() !== "") {
+                        padConfig.name = newName.trim();
+                        saveConfigToLocalStorage();
+                        renderPads();
+                        showMessage(`เปลี่ยนชื่อแป้นเป็น "${padConfig.name}" แล้ว`);
+                    }
+                });
+            }
+
+
             const volSlider = padEl.querySelector('.vol-slider');
             volSlider.addEventListener('pointerdown', (e) => e.stopPropagation());
             volSlider.addEventListener('input', (e) => {
@@ -555,6 +737,9 @@
                 colorHex: 'text-gray-300',
                 defaultSynth: 'playTom1',
                 volume: 1.0,
+                width: 110,
+                height: 110,
+                size: 110, // กำหนดขนาดเริ่มต้น
                 x: newX,
                 y: newY
             };
@@ -873,7 +1058,7 @@
 
         resetDefaultBtn.addEventListener('click', () => {
             if (confirm("Reset layout, volume, and custom keys to default?")) {
-                localStorage.removeItem('prakaipad_config_v3');
+                localStorage.removeItem('prakaipad_config_v4'); // แก้จาก v3 เป็น v4
                 if (db) {
                     try {
                         const tx = db.transaction([STORE_NAME], 'readwrite');
